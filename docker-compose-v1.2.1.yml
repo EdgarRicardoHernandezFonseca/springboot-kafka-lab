@@ -1,0 +1,57 @@
+services:    # nodo principal donde se define cada uno de los contenedores que componen la aplicación. 
+
+  kafka:    # Contnedor del servicio kafka. 
+
+    image: apache/kafka:4.2.1    # versión de Kafka 4.2.1
+
+    container_name: kafka    # Nombre asignado al contenedor kafka.
+    hostname: kafka     # Hostname del contenedor.    # Los demás servicios Docker resolverán este nombre mediante DNS interno.
+
+    ports:    # Puerto en el que estara disponible el serivicio kafka en docker.  
+      - "9092:9092"    # 9092 numero de puerto configurado para el servicio de kafka. 
+ 
+    environment:    # Configuracion del ambiente del servicio kafka en el contenedor docker. 
+
+      KAFKA_NODE_ID: 1    # Id asignado al nodo del servicio kafka en doker. ID asignado 1.  
+
+      KAFKA_PROCESS_ROLES: broker,controller
+
+      KAFKA_LISTENERS: PLAINTEXT://:9093,PLAINTEXT_HOST://:9092,CONTROLLER://:9094    # Listener utilizado por aplicaciones que corren fuera de Docker    # (Spring Boot ejecutándose desde STS).    # HOST://:9092
+
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9093,PLAINTEXT_HOST://localhost:9092
+
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9091
+
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+
+
+
+  kafka-ui:    # Contenedor del servicio kafka UI (Intefax de Usuario). 
+
+    image: provectuslabs/kafka-ui:latest     # versión de Kafka UI, configurada la ultima libre y disponible en internet. 
+
+    container_name: kafka-ui    # Nombre asignado al contenedor kafka UI (Intefax de Usuario).
+
+    depends_on:    # El servicio requiere que exista primero el contenedor de kafka creado y levantado (Up)
+        - kafka
+
+    ports:    # Puerto en el que estara disponible el serivicio kafka UI en docker.  
+      - "8081:8080"    # 8081 numero de puerto configurado para el servicio de kafka UI.
+
+    environment:
+
+      KAFKA_CLUSTERS_0_NAME: Local
+
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9093
