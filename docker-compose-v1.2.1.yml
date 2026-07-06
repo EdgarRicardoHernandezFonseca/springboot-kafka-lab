@@ -1,57 +1,397 @@
-services:    # nodo principal donde se define cada uno de los contenedores que componen la aplicación. 
+# What is it?
+# Root section of the Docker Compose file where application services are defined.
+#
+# Why is it needed?
+# Docker Compose uses this section to know which containers must be created.
+#
+# How is it used in this laboratory?
+# It defines the Kafka broker and Kafka UI services.
+#
+# What happens if it is removed or misconfigured?
+# Docker Compose cannot identify any services and the application will not start.
+services:    
 
-  kafka:    # Contnedor del servicio kafka. 
+  # What is it?
+  # Kafka broker service responsible for storing and delivering messages.
+  #
+  # Why is it needed?
+  # It provides asynchronous communication between producers and consumers.
+  #
+  # How is it used in this laboratory?
+  # It receives messages from the /orders endpoint and delivers them to the OrderConsumer.
+  #
+  # What happens if it is removed or misconfigured?
+  # Producers and consumers will not be able to exchange messages.
+  kafka:
 
-    image: apache/kafka:4.2.1    # versión de Kafka 4.2.1
+    # What is it?
+    # Docker image used to create the Kafka container.
+    #
+    # Why is it needed?
+    # Fixing the version guarantees reproducible and stable environments.
+    #
+    # How is it used in this laboratory?
+    # Apache Kafka 4.2.1 is used because it is compatible with the project configuration.
+    #
+    # What happens if it is removed or misconfigured?
+    # Docker cannot create the container or an incompatible Kafka version may be installed.
+    image: apache/kafka:4.2.1
 
-    container_name: kafka    # Nombre asignado al contenedor kafka.
-    hostname: kafka     # Hostname del contenedor.    # Los demás servicios Docker resolverán este nombre mediante DNS interno.
+    # What is it?
+    # Fixed Docker container name.
+    #
+    # Why is it needed?
+    # Makes container administration and debugging easier.
+    #
+    # How is it used in this laboratory?
+    # The container is always identified as "kafka".
+    #
+    # What happens if it is removed or misconfigured?
+    # Docker generates a random name, making administration and troubleshooting more difficult.
+    container_name: kafka
 
-    ports:    # Puerto en el que estara disponible el serivicio kafka en docker.  
-      - "9092:9092"    # 9092 numero de puerto configurado para el servicio de kafka. 
- 
-    environment:    # Configuracion del ambiente del servicio kafka en el contenedor docker. 
+    # What is it?
+    # Internal hostname assigned to the Kafka container.
+    #
+    # Why is it needed?
+    # Allows other containers to resolve Kafka through Docker DNS.
+    #
+    # How is it used in this laboratory?
+    # Kafka UI connects to the broker using the hostname "kafka".
+    #
+    # What happens if it is removed or misconfigured?
+    # Other containers may fail to locate the broker, causing connection errors.
+    hostname: kafka
 
-      KAFKA_NODE_ID: 1    # Id asignado al nodo del servicio kafka en doker. ID asignado 1.  
+    # What is it?
+    # Maps container ports to the host machine.
+    #
+    # Why is it needed?
+    # Allows applications outside Docker to access Kafka.
+    #
+    # How is it used in this laboratory?
+    # Spring Boot connects to Kafka through localhost:9092.
+    #
+    # What happens if it is removed or misconfigured?
+    # External applications will not be able to connect to Kafka.
+    ports:
+      - "9092:9092"
 
-      KAFKA_PROCESS_ROLES: broker,controller
-
-      KAFKA_LISTENERS: PLAINTEXT://:9093,PLAINTEXT_HOST://:9092,CONTROLLER://:9094    # Listener utilizado por aplicaciones que corren fuera de Docker    # (Spring Boot ejecutándose desde STS).    # HOST://:9092
-
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9093,PLAINTEXT_HOST://localhost:9092
-
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-
-      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
-
-      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9091
-
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-
-      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
-
-      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
-
-      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
-
-
-
-  kafka-ui:    # Contenedor del servicio kafka UI (Intefax de Usuario). 
-
-    image: provectuslabs/kafka-ui:latest     # versión de Kafka UI, configurada la ultima libre y disponible en internet. 
-
-    container_name: kafka-ui    # Nombre asignado al contenedor kafka UI (Intefax de Usuario).
-
-    depends_on:    # El servicio requiere que exista primero el contenedor de kafka creado y levantado (Up)
-        - kafka
-
-    ports:    # Puerto en el que estara disponible el serivicio kafka UI en docker.  
-      - "8081:8080"    # 8081 numero de puerto configurado para el servicio de kafka UI.
-
+    # What is it?
+    # Collection of environment variables used to configure the Kafka broker.
+    #
+    # Why is it needed?
+    # Defines how Kafka starts and behaves.
+    #
+    # How is it used in this laboratory?
+    # Configures Kafka in KRaft mode with separate listeners for Docker and the host machine.
+    #
+    # What happens if it is removed or misconfigured?
+    # Kafka may fail to start or behave incorrectly.
     environment:
 
+      # What is it?
+      # Unique identifier of the Kafka node.
+      #
+      # Why is it needed?
+      # Required by KRaft to uniquely identify each broker in the cluster.
+      #
+      # How is it used in this laboratory?
+      # This single-node laboratory uses node ID 1.
+      #
+      # What happens if it is removed or misconfigured?
+      # Kafka will fail to start or may not join the cluster correctly.
+      KAFKA_NODE_ID: 1
+
+      # What is it?
+      # Defines the roles assigned to the Kafka node.
+      #
+      # Why is it needed?
+      # KRaft requires each node to run as a broker, controller, or both.
+      #
+      # How is it used in this laboratory?
+      # The node acts as both broker and controller because this is a single-node environment.
+      #
+      # What happens if it is removed or misconfigured?
+      # Kafka will not start or the cluster will not operate correctly.
+      KAFKA_PROCESS_ROLES: broker,controller
+
+      # What is it?
+      # Defines the network listeners that Kafka binds to.
+      #
+      # Why is it needed?
+      # Each listener accepts client connections on a specific network interface and port.
+      #
+      # How is it used in this laboratory?
+      # Three listeners are configured:
+      # - PLAINTEXT (Docker internal communication)
+      # - PLAINTEXT_HOST (Spring Boot running on the host)
+      # - CONTROLLER (KRaft controller communication)
+      #
+      # What happens if it is removed or misconfigured?
+      # Clients may fail to connect, or Kafka may not start correctly.
+      KAFKA_LISTENERS: PLAINTEXT://:9093,PLAINTEXT_HOST://:9092,CONTROLLER://:9094
+
+      # What is it?
+      # Defines the addresses that Kafka advertises to clients after the initial connection.
+      # Clients use these advertised addresses for all subsequent communication with the broker.
+      #
+      # Why is it needed?
+      # It allows clients running in different networks (Docker, localhost, cloud, etc.)
+      # to reconnect using an address they can actually reach.
+      #
+      # How is it used in this laboratory?
+      # Two advertised listeners are configured:
+      # - PLAINTEXT://kafka:9093 for Docker containers (Kafka UI).
+      # - PLAINTEXT_HOST://localhost:9092 for Spring Boot running on the host machine.
+      #
+      # What happens if it is removed or misconfigured?
+      # Clients may connect initially but later fail because Kafka advertises an
+      # unreachable hostname or port, producing errors such as UnknownHostException
+      # or connection timeouts.
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9093,PLAINTEXT_HOST://localhost:9092
+
+      # What is it?
+      # Maps each listener name to the security protocol that Kafka should use.
+      #
+      # Why is it needed?
+      # Kafka allows multiple listeners, each using a different security protocol
+      # such as PLAINTEXT, SSL, SASL_SSL or SASL_PLAINTEXT.
+      #
+      # How is it used in this laboratory?
+      # All listeners use PLAINTEXT because the lab focuses on Kafka fundamentals
+      # without authentication or encryption.
+      #
+      # What happens if it is removed or misconfigured?
+      # Kafka cannot determine which protocol belongs to each listener and
+      # the broker will fail to start.
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+
+      # What is it?
+      # Specifies which listener is dedicated to controller communication in KRaft mode.
+      #
+      # Why is it needed?
+      # Kafka must know which listener is reserved for controller traffic
+      # such as metadata management and leader election.
+      #
+      # How is it used in this laboratory?
+      # The CONTROLLER listener is dedicated exclusively to internal controller communication.
+      #
+      # What happens if it is removed or misconfigured?
+      # Kafka cannot initialize the KRaft controller correctly and
+      # the broker will fail to start.
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+
+      # What is it?
+      # Defines the set of controller nodes participating in the KRaft quorum.
+      #
+      # Why is it needed?
+      # KRaft replaces ZooKeeper and requires a controller quorum to manage
+      # cluster metadata consistently.
+      #
+      # How is it used in this laboratory?
+      # A single controller node is configured:
+      # node 1 running on kafka:9091.
+      #
+      # What happens if it is removed or misconfigured?
+      # Kafka cannot elect or contact the controller and
+      # the broker will fail during startup.
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9091
+
+      # What is it?
+      # Selects which listener brokers use for inter-broker communication.
+      #
+      # Why is it needed?
+      # Kafka brokers may expose multiple listeners, but they must use only one
+      # for replication and internal communication.
+      #
+      # How is it used in this laboratory?
+      # The internal PLAINTEXT listener is used for broker communication.
+      #
+      # What happens if it is removed or misconfigured?
+      # Broker-to-broker communication fails,
+      # preventing cluster replication and coordination.
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+
+      # What is it?
+      # Defines the replication factor for Kafka's internal __consumer_offsets topic.
+      #
+      # Why is it needed?
+      # Kafka stores consumer group offsets in this internal topic.
+      # Replication protects this information against broker failures.
+      #
+      # How is it used in this laboratory?
+      # Since only one broker exists, the replication factor is set to 1.
+      #
+      # What happens if it is removed or misconfigured?
+      # Kafka may fail to create the internal offsets topic,
+      # preventing consumers from working correctly.
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+      # What is it?
+      # Defines the replication factor for Kafka's internal transaction state topic.
+      #
+      # Why is it needed?
+      # Transaction metadata must be replicated to guarantee durability.
+      #
+      # How is it used in this laboratory?
+      # One broker is available, so the replication factor is 1.
+      #
+      # What happens if it is removed or misconfigured?
+      # Transactional producers may fail because the transaction log
+      # cannot be created correctly.
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+
+      # What is it?
+      # Defines the minimum number of in-sync replicas required
+      # before Kafka accepts transactional writes.
+      #
+      # Why is it needed?
+      # It protects transactional data from being acknowledged
+      # before enough replicas have synchronized.
+      #
+      # How is it used in this laboratory?
+      # Only one broker exists, therefore one in-sync replica is required.
+      #
+      # What happens if it is removed or misconfigured?
+      # Transactions may fail or the broker may refuse transactional writes.
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+
+      # What is it?
+      # Defines how long Kafka waits before performing the first
+      # consumer group rebalance.
+      #
+      # Why is it needed?
+      # It gives additional consumers time to join the group,
+      # reducing unnecessary rebalances.
+      #
+      # How is it used in this laboratory?
+      # The value is set to 0 to allow consumers to start processing
+      # messages immediately.
+      #
+      # What happens if it is removed or misconfigured?
+      # Consumers may wait longer before receiving partitions
+      # or experience unnecessary rebalances.
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+
+  # What is it?
+  # Kafka UI is a free and open-source web application used to monitor and manage Apache Kafka clusters.
+  #
+  # Why is it needed?
+  # It provides a graphical interface to inspect brokers, topics, partitions,
+  # consumer groups, and messages without using the Kafka command-line tools.
+  #
+  # How is it used in this laboratory?
+  # In this lab, Kafka UI is used to monitor the Local Kafka cluster,
+  # inspect the 'orders' topic, and verify that producers and consumers are working correctly.
+  #
+  # What happens if it is removed or misconfigured?
+  # Kafka will continue working normally, but the graphical interface will not be available,
+  # making monitoring and debugging more difficult.
+  kafka-ui:
+
+    # What is it?
+    # Docker image used to create the Kafka UI container.
+    #
+    # Why is it needed?
+    # It specifies which Kafka UI version Docker should download and run.
+    #
+    # How is it used in this laboratory?
+    # The latest compatible Kafka UI image is used to monitor the Kafka broker.
+    #
+    # What happens if it is removed or misconfigured?
+    # Docker cannot create the container or an incompatible version
+    # may cause runtime errors.
+    image: provectuslabs/kafka-ui:latest
+
+    # What is it?
+    # Fixed Docker container name.
+    #
+    # Why is it needed?
+    # Makes container administration, logging, and debugging easier.
+    #
+    # How is it used in this laboratory?
+    # The Kafka UI container is always identified as "kafka-ui".
+    #
+    # What happens if it is removed or misconfigured?
+    # Docker assigns a generated name,
+    # making container management more difficult.
+    container_name: kafka-ui
+
+    # What is it?
+    # Defines service dependencies between Docker containers.
+    #
+    # Why is it needed?
+    # It ensures that Docker starts the Kafka container
+    # before starting Kafka UI.
+    #
+    # How is it used in this laboratory?
+    # Kafka UI depends on the Kafka broker because it cannot
+    # display cluster information without connecting to Kafka.
+    #
+    # What happens if it is removed or misconfigured?
+    # Docker may start Kafka UI before Kafka,
+    # causing temporary connection errors during startup.
+    depends_on:
+        - kafka
+
+    # What is it?
+    # Maps a container port to a host machine port.
+    #
+    # Why is it needed?
+    # It allows users outside Docker to access Kafka UI.
+    #
+    # How is it used in this laboratory?
+    # Kafka UI is accessed through http://localhost:8081.
+    #
+    # What happens if it is removed or misconfigured?
+    # Kafka UI will still run inside Docker,
+    # but it will not be accessible from the host machine.
+    ports:
+      - "8081:8080"
+
+    # What is it?
+    # Collection of environment variables used to configure Kafka UI.
+    #
+    # Why is it needed?
+    # It defines how Kafka UI connects to Kafka clusters
+    # and how they are displayed in the interface.
+    #
+    # How is it used in this laboratory?
+    # It configures Kafka UI to connect to the Local Kafka cluster.
+    #
+    # What happens if it is removed or misconfigured?
+    # Kafka UI may start,
+    # but it will not be able to connect to the Kafka broker correctly.
+    environment:
+
+      # What is it?
+      # Defines the display name of the first Kafka cluster configured in Kafka UI.
+      #
+      # Why is it needed?
+      # It allows users to easily identify the cluster from the web interface.
+      #
+      # How is it used in this laboratory?
+      # The cluster is displayed in Kafka UI as "Local".
+      #
+      # What happens if it is removed or misconfigured?
+      # The cluster name may appear incorrectly
+      # or Kafka UI may fail to load the cluster configuration.
       KAFKA_CLUSTERS_0_NAME: Local
 
+      # What is it?
+      # Specifies the bootstrap server address used by Kafka UI
+      # to connect to the Kafka cluster.
+      #
+      # Why is it needed?
+      # Kafka UI must know the address of at least one Kafka broker
+      # to retrieve cluster metadata.
+      #
+      # How is it used in this laboratory?
+      # Kafka UI connects to the Kafka broker through
+      # kafka:9093 using Docker's internal network.
+      #
+      # What happens if it is removed or misconfigured?
+      # Kafka UI cannot connect to the Kafka broker,
+      # and the cluster will appear offline.
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9093
