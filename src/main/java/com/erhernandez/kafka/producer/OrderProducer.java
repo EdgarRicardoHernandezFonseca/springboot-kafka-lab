@@ -16,6 +16,16 @@ public class OrderProducer {
 
     public void send(Order order) {
 
-        kafkaTemplate.send("orders", order);
+        String key = order.getOrderId().toString();
+
+        kafkaTemplate.send("orders", key, order);
+
+        System.out.println("--------------------------------");
+        System.out.println("Order sent");
+        System.out.println("--------------------------------");
+        System.out.println("Key         : " + key);
+        System.out.println("Customer    : " + order.getCustomerName());
+        System.out.println("--------------------------------");
     }
+
 }

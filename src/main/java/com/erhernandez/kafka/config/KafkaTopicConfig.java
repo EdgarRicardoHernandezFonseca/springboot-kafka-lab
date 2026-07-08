@@ -11,9 +11,9 @@ public class KafkaTopicConfig {
     @Bean
     public NewTopic ordersTopic() {
 
-        return TopicBuilder
+    	return TopicBuilder
                 .name("orders")
-                .partitions(1)
+                .partitions(3)
                 .replicas(1)
                 .build();
     }
