@@ -5,23 +5,31 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.listener.ContainerProperties;
+import org.springframework.kafka.listener.DefaultErrorHandler;
 
 @Configuration
 public class KafkaConsumerConfig {
 
-    @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, Object> kafkaListenerContainerFactory(
-            ConsumerFactory<String, Object> consumerFactory) {
+	@Bean
+	public ConcurrentKafkaListenerContainerFactory<String,Object>
+	kafkaListenerContainerFactory(
 
-        ConcurrentKafkaListenerContainerFactory<String, Object> factory =
-                new ConcurrentKafkaListenerContainerFactory<>();
+	        ConsumerFactory<String,Object> consumerFactory,
 
-        factory.setConsumerFactory(consumerFactory);
+	        DefaultErrorHandler defaultErrorHandler){
 
-        factory.getContainerProperties()
-                .setAckMode(ContainerProperties.AckMode.MANUAL);
+	    ConcurrentKafkaListenerContainerFactory<String,Object> factory =
+	            new ConcurrentKafkaListenerContainerFactory<>();
 
-        return factory;
-    }
+	    factory.setConsumerFactory(consumerFactory);
+
+	    factory.getContainerProperties()
+	            .setAckMode(ContainerProperties.AckMode.MANUAL);
+
+	    factory.setCommonErrorHandler(defaultErrorHandler);
+
+	    return factory;
+
+	}
 
 }

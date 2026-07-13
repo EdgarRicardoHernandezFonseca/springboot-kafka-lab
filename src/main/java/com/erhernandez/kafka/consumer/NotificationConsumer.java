@@ -26,8 +26,16 @@ public class NotificationConsumer {
             @Header(KafkaHeaders.OFFSET) long offset) {
 
     	
-    	if (order.getOrderId() == 2000) {
-    	    throw new RuntimeException("Simulated Exception");
+    	if(order.getOrderId() % 2 == 0){
+		    throw new RuntimeException("Retry Test");
+		}
+    	
+    	if(order.getCustomerName().equals("ERROR")){
+
+    	    throw new RuntimeException(
+    	            "Business Error"
+    	    );
+
     	}
     	
     	log.info("NOTIFICATION CONSUMER");

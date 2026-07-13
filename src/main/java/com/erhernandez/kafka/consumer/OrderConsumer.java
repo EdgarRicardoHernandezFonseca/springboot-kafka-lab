@@ -26,7 +26,15 @@ public class OrderConsumer {
     	if(order.getOrderId() % 2 == 0){
 		    throw new RuntimeException("Retry Test");
 		}
+    	
+    	if(order.getCustomerName().equals("ERROR")){
 
+    	    throw new RuntimeException(
+    	            "Business Error"
+    	    );
+
+    	}
+    	
     	log.info("--------------------------------");
     	log.info("Order received");
     	log.info("--------------------------------");
