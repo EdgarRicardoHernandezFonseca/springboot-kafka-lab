@@ -25,6 +25,11 @@ public class NotificationConsumer {
             @Header(KafkaHeaders.RECEIVED_PARTITION) int partition,
             @Header(KafkaHeaders.OFFSET) long offset) {
 
+    	
+    	if (order.getOrderId() == 2000) {
+    	    throw new RuntimeException("Simulated Exception");
+    	}
+    	
     	log.info("NOTIFICATION CONSUMER");
     	log.info("Partition : {}", partition);
     	log.info("Offset    : {}", offset);

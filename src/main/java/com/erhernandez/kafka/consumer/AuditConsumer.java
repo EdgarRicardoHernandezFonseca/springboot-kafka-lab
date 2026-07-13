@@ -24,6 +24,10 @@ public class AuditConsumer {
 	        Acknowledgment ack,
 	        @Header(KafkaHeaders.RECEIVED_PARTITION) int partition,
 	        @Header(KafkaHeaders.OFFSET) long offset) {
+		
+		if(order.getOrderId() % 2 != 0){
+		    throw new RuntimeException("Retry Test");
+		}
 
 	    log.info("***********************");
 	    log.info("AUDIT CONSUMER");
