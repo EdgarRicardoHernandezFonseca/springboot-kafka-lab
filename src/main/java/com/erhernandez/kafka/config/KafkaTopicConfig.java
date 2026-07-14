@@ -23,7 +23,7 @@ public class KafkaTopicConfig {
     public NewTopic ordersDltTopic(){
 
         return TopicBuilder
-                .name("orders.DLT")
+                .name("orders-dlt")
                 .partitions(3)
                 .replicas(1)
                 .build();

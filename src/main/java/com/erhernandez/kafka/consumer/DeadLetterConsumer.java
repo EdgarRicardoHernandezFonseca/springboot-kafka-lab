@@ -14,7 +14,7 @@ public class DeadLetterConsumer {
 	        LoggerFactory.getLogger(DeadLetterConsumer.class);
 
 	@KafkaListener(
-	        topics = "orders.DLT",
+	        topics = "orders-dlt",
 	        groupId = "dlt-group")
 	public void consume(Order order){
 

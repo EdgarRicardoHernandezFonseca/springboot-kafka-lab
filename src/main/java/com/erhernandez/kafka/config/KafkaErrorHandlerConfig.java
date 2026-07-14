@@ -1,6 +1,5 @@
 package com.erhernandez.kafka.config;
 
-import org.apache.kafka.common.TopicPartition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -8,30 +7,35 @@ import org.springframework.kafka.listener.DeadLetterPublishingRecoverer;
 import org.springframework.kafka.listener.DefaultErrorHandler;
 import org.springframework.util.backoff.FixedBackOff;
 
+import com.erhernandez.kafka.exception.InvalidOrderException;
+
 @Configuration
 public class KafkaErrorHandlerConfig {
 
 	@Bean
 	public DefaultErrorHandler defaultErrorHandler(
-	        KafkaTemplate<Object,Object> kafkaTemplate) {
+	        KafkaTemplate<Object,Object> kafkaTemplate){
 
-		DeadLetterPublishingRecoverer recoverer =
-		        new DeadLetterPublishingRecoverer(
+	    DeadLetterPublishingRecoverer recoverer =
+	            new DeadLetterPublishingRecoverer(kafkaTemplate);
 
-		            kafkaTemplate,
+	    FixedBackOff backOff =
+	            new FixedBackOff(2000L,3);
 
-		            (record, exception) ->
+	    DefaultErrorHandler errorHandler =
+	            new DefaultErrorHandler(
+	                    recoverer,
+	                    backOff
+	            );
 
-		                new TopicPartition(
-		                        record.topic()+".DLT",
-		                        record.partition())
+	    errorHandler.addNotRetryableExceptions(
 
-		        );
+	            IllegalArgumentException.class,
+	            NullPointerException.class,
+	            InvalidOrderException.class
 
-	    return new DefaultErrorHandler(
-	            recoverer,
-	            new FixedBackOff(2000L,3)
 	    );
 
+	    return errorHandler;
 	}
 }

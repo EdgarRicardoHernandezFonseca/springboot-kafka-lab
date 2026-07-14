@@ -30,13 +30,21 @@ public class NotificationConsumer {
 		    throw new RuntimeException("Retry Test");
 		}
     	
-    	if(order.getCustomerName().equals("ERROR")){
+    	if(order.getCustomerName().equalsIgnoreCase("ERROR")){
 
-    	    throw new RuntimeException(
-    	            "Business Error"
-    	    );
+		    throw new RuntimeException(
+		            "Temporary processing error"
+		    );
 
-    	}
+		}
+		
+		if(order.getCustomerName().isBlank()){
+
+		    throw new IllegalArgumentException(
+		            "Customer name is mandatory"
+		    );
+
+		}
     	
     	log.info("NOTIFICATION CONSUMER");
     	log.info("Partition : {}", partition);
