@@ -5,8 +5,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
-import com.erhernandez.kafka.consumer.AuditConsumer;
 import com.erhernandez.kafka.dto.Order;
+
+import java.nio.charset.StandardCharsets;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.header.internals.RecordHeader;
 
 @Service
 public class OrderProducer {
@@ -24,7 +27,35 @@ public class OrderProducer {
 
         String key = order.getOrderId().toString();
 
-        kafkaTemplate.send("orders", key, order);
+        ProducerRecord<String, Order> record =
+                new ProducerRecord<>(
+                        "orders",
+                        String.valueOf(order.getOrderId()),
+                        order
+                );
+        
+        record.headers().add(
+                new RecordHeader(
+                        "eventType",
+                        "ORDER_CREATED".getBytes(StandardCharsets.UTF_8)
+                )
+        );
+
+        record.headers().add(
+                new RecordHeader(
+                        "source",
+                        "springboot-kafka-lab".getBytes(StandardCharsets.UTF_8)
+                )
+        );
+
+        record.headers().add(
+                new RecordHeader(
+                        "eventVersion",
+                        "v1".getBytes(StandardCharsets.UTF_8)
+                )
+        );
+        
+        kafkaTemplate.send(record);
 
         System.out.println("--------------------------------");
         System.out.println("Order sent");
