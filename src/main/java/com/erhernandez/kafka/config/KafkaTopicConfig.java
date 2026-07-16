@@ -29,4 +29,23 @@ public class KafkaTopicConfig {
                 .build();
 
     }
+    
+    @Bean
+    public NewTopic notificationsDltTopic(){
+
+        return TopicBuilder
+                .name("notifications-dlt")
+                .partitions(3)
+                .replicas(1)
+                .build();
+
+    }
+    
+    @Bean
+    public NewTopic notificationsTopic() {
+        return TopicBuilder.name("notifications")
+                .partitions(3)
+                .replicas(1)
+                .build();
+    }
 }

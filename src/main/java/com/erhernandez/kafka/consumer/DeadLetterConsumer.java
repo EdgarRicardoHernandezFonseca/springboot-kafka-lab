@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
+import com.erhernandez.kafka.dto.Notification;
 import com.erhernandez.kafka.dto.Order;
 
 @Component
@@ -24,6 +25,19 @@ public class DeadLetterConsumer {
 	    log.info("OrderId : {}",order.getOrderId());
 	    log.info("Customer: {}",order.getCustomerName());
 	    log.info("Amount  : {}",order.getTotalAmount());
+
+	}
+	
+	@KafkaListener(
+	        topics = "notifications-dlt",
+	        groupId = "dlt-group")
+	public void consume(Notification notification){
+
+	    log.info("==============================");
+	    log.info("MESSAGE ARRIVED TO DLT");
+	    log.info("==============================");
+	    log.info("OrderId : {}",notification.getOrderId());
+	    log.info("Message : {}",notification.getMessage());
 
 	}
 }

@@ -8,38 +8,36 @@ import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.stereotype.Service;
 
+import com.erhernandez.kafka.dto.Notification;
 import com.erhernandez.kafka.dto.Order;
+import com.erhernandez.kafka.producer.NotificationProducer;
 
 @Service
 public class NotificationConsumer {
 	
 	private static final Logger log =
 	        LoggerFactory.getLogger(NotificationConsumer.class);
+	
+	private final NotificationProducer notificationProducer;
+
+	public NotificationConsumer(NotificationProducer notificationProducer) {
+	    this.notificationProducer = notificationProducer;
+	}
 
     @KafkaListener(
             topics = "orders",
-            groupId = "order-group")
+            groupId = "notification-service"
+            )
     public void consume(
     		Order order,
-    		@Header("eventType")
-            String eventType,
-            @Header("eventVersion")
-            String eventVersion,
-            @Header("source")
-            String source,
+    		@Header("eventType") String eventType,
+            @Header("eventVersion") String eventVersion,
+            @Header("source") String source,
+            @Header("correlationId") String correlationId,
     		Acknowledgment ack,
             @Header(KafkaHeaders.RECEIVED_PARTITION) int partition,
             @Header(KafkaHeaders.OFFSET) long offset) {
     	
-    	log.info("--------------------------------");
-    	log.info("Message Headers");
-    	log.info("--------------------------------");
-
-    	log.info("Event Type    : {}", eventType);
-    	log.info("Version       : {}", eventVersion);
-    	log.info("Source        : {}", source);
-
-    	log.info("--------------------------------");
     	
     	if(order.getOrderId() % 2 == 0){
 		    throw new RuntimeException("Retry Test");
@@ -61,14 +59,33 @@ public class NotificationConsumer {
 
 		}
     	
-    	log.info("NOTIFICATION CONSUMER");
-    	log.info("Partition : {}", partition);
-    	log.info("Offset    : {}", offset);
-    	log.info("Order ID  : {}", order.getOrderId());
-    	
-    	log.info("--------------------------------");
-    	log.info("Processing notification...");
-    	log.info("Order ID : {}", order.getOrderId());
+		Notification notification =
+    	        new Notification(
+    	                order.getOrderId(),
+    	                "Order processed successfully");
+
+    	notificationProducer.send(notification, correlationId);
+		
+		log.info("--------------------------------");
+		log.info("Message Headers");
+		log.info("--------------------------------");
+
+		log.info("Event Type    : {}", eventType);
+		log.info("Version       : {}", eventVersion);
+		log.info("Source        : {}", source);
+		log.info("CorrelationId : {}", correlationId);
+
+		log.info("--------------------------------");
+
+		log.info("NOTIFICATION CONSUMER");
+		log.info("Partition : {}", partition);
+		log.info("Offset    : {}", offset);
+		log.info("Order ID  : {}", order.getOrderId());
+
+		log.info("--------------------------------");
+
+		log.info("Processing notification...");
+		log.info("Order ID : {}", order.getOrderId());
 
     	try {
 			Thread.sleep(3000);

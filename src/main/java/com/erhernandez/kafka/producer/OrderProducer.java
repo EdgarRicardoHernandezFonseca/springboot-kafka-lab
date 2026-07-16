@@ -11,6 +11,8 @@ import java.nio.charset.StandardCharsets;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.internals.RecordHeader;
 
+import java.util.UUID;
+
 @Service
 public class OrderProducer {
 
@@ -26,6 +28,7 @@ public class OrderProducer {
     public void send(Order order) {
 
         String key = order.getOrderId().toString();
+        String correlationId = UUID.randomUUID().toString();
 
         ProducerRecord<String, Order> record =
                 new ProducerRecord<>(
@@ -55,19 +58,17 @@ public class OrderProducer {
                 )
         );
         
-        kafkaTemplate.send(record);
-
-        System.out.println("--------------------------------");
-        System.out.println("Order sent");
-        System.out.println("--------------------------------");
-        System.out.println("Key         : " + key);
-        System.out.println("Customer    : " + order.getCustomerName());
-        System.out.println("--------------------------------");
+        record.headers().add(
+                "correlationId",
+                correlationId.getBytes(StandardCharsets.UTF_8));
         
+        kafkaTemplate.send(record);
+   
         log.info("***********************");
 	    log.info("Order sent");
 	    log.info("Key       : {}", key);
 	    log.info("Customer  : {}", order.getCustomerName());
+	    log.info("Correlation ID : {}", correlationId);
 	    log.info("***********************");
     }
 

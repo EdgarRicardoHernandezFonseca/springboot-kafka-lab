@@ -3,38 +3,39 @@ package com.erhernandez.kafka.consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.kafka.support.KafkaHeaders;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Service;
 
-import com.erhernandez.kafka.dto.Order;
+import com.erhernandez.kafka.dto.Notification;
 
 @Service
-public class AuditConsumer {
+public class EmailConsumer {
 	
 	private static final Logger log =
-	        LoggerFactory.getLogger(AuditConsumer.class);
-
-	@KafkaListener(
-	        topics = "orders",
-	        groupId = "audit-service"
-			)
-	public void consume(
-	        Order order,
-	        @Header("eventType") String eventType,
+	        LoggerFactory.getLogger(EmailConsumer.class);
+	
+    @KafkaListener(
+            topics = "notifications",
+            groupId = "email-service"
+            )
+    public void consume(
+    		Notification notification,
+    		@Header("eventType") String eventType,
             @Header("eventVersion") String eventVersion,
             @Header("source") String source,
             @Header("correlationId") String correlationId,
-	        Acknowledgment ack,
-	        @Header(KafkaHeaders.RECEIVED_PARTITION) int partition,
-	        @Header(KafkaHeaders.OFFSET) long offset) {
-		
-		if(order.getOrderId() % 2 == 0){
+    		Acknowledgment ack,
+            @Header(KafkaHeaders.RECEIVED_PARTITION) int partition,
+            @Header(KafkaHeaders.OFFSET) long offset) {
+    	
+    	
+    	if(notification.getOrderId() % 2 == 0){
 		    throw new RuntimeException("Retry Test");
 		}
-		
-		if(order.getCustomerName().equalsIgnoreCase("ERROR")){
+    	
+    	if(notification.getMessage().equalsIgnoreCase("ERROR")){
 
 		    throw new RuntimeException(
 		            "Temporary processing error"
@@ -42,14 +43,14 @@ public class AuditConsumer {
 
 		}
 		
-		if(order.getCustomerName().isBlank()){
+		if(notification.getMessage().isBlank()){
 
 		    throw new IllegalArgumentException(
-		            "Customer name is mandatory"
+		            "Message is mandatory"
 		    );
 
 		}
-
+    	
 		log.info("--------------------------------");
 		log.info("Message Headers");
 		log.info("--------------------------------");
@@ -61,15 +62,15 @@ public class AuditConsumer {
 
 		log.info("--------------------------------");
 
-		log.info("AUDIT CONSUMER");
+		log.info("EMAIL CONSUMER");
 		log.info("Partition : {}", partition);
 		log.info("Offset    : {}", offset);
-		log.info("Order ID  : {}", order.getOrderId());
+		log.info("Order ID  : {}", notification.getOrderId());
 
 		log.info("--------------------------------");
 
-		log.info("Processing audit...");
-		log.info("Order ID : {}", order.getOrderId());
+		log.info("Processing email...");
+		log.info("Order ID : {}", notification.getOrderId());
 
     	try {
 			Thread.sleep(3000);
@@ -82,6 +83,6 @@ public class AuditConsumer {
     	ack.acknowledge();
 
         log.info("Offset committed manually.");
-        
-	}
+
+    }
 }

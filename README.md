@@ -200,17 +200,23 @@ Examples:
 
 ```
 docs/
+    README-v1.0.0.md
     README-v1.1.0.md
     README-v1.2.0.md
+    README-v1.2.1.md
     README-v1.3.0.md
     README-v1.4.0.md
     README-v1.5.0.md
+    README-v1.5.1.md
+    README-v1.5.2.md
     README-v1.6.0.md
     README-v1.6.1.md
     README-v1.6.2.md
     README-v1.6.3.md
     README-v1.6.4.md
     README-v1.7.0.md
+    README-v1.7.1.md
+    README-v1.7.2.md
 ```
 
 Each document explains:
@@ -283,9 +289,9 @@ This project is available for educational purposes.
 | Dead Letter Topic        | ✅       |
 | Non-Retryable Exceptions | ✅       |
 | Custom Headers           | ✅       |
-| Reading Headers          | 🚧       |
-| Filtering                | ⏳       |
-| Avro                     | ⏳       |
+| Reading Headers          | ✅       |
+| Filtering                | 🚧       |
+| Avro                     | 🚧       |
 | Kafka Streams            | ⏳       |
 | Transactions             | ⏳       |
 | Exactly Once             | ⏳       |
