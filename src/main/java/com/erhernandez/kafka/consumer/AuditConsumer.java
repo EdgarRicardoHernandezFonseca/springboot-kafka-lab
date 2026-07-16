@@ -18,12 +18,29 @@ public class AuditConsumer {
 
 	@KafkaListener(
 	        topics = "orders",
-	        groupId = "order-group")
+	        groupId = "order-group"
+	)
 	public void consume(
 	        Order order,
+	        @Header("eventType")
+            String eventType,
+            @Header("eventVersion")
+            String eventVersion,
+            @Header("source")
+            String source,
 	        Acknowledgment ack,
 	        @Header(KafkaHeaders.RECEIVED_PARTITION) int partition,
 	        @Header(KafkaHeaders.OFFSET) long offset) {
+		
+		log.info("--------------------------------");
+    	log.info("Message Headers");
+    	log.info("--------------------------------");
+
+    	log.info("Event Type    : {}", eventType);
+    	log.info("Version       : {}", eventVersion);
+    	log.info("Source        : {}", source);
+
+    	log.info("--------------------------------");
 		
 		if(order.getOrderId() % 2 == 0){
 		    throw new RuntimeException("Retry Test");
