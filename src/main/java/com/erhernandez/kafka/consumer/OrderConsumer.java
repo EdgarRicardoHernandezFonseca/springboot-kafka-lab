@@ -9,19 +9,28 @@ import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.stereotype.Service;
 
 import com.erhernandez.kafka.dto.Order;
+import com.erhernandez.kafka.dto.OrderV2;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class OrderConsumer {
 	
 	private static final Logger log =
 	        LoggerFactory.getLogger(OrderConsumer.class);
+	
+	private final ObjectMapper objectMapper;
+
+	public OrderConsumer(ObjectMapper objectMapper) {
+	    this.objectMapper = objectMapper;
+	}
 
     @KafkaListener(
     		topics = "orders", 
     		groupId = "order-processing"
             )
     public void consume(
-    		Order order,
+    		String payload,
     		@Header("eventType") String eventType,
             @Header("eventVersion") String eventVersion,
             @Header("source") String source,
@@ -29,7 +38,112 @@ public class OrderConsumer {
     		Acknowledgment ack,
             @Header(KafkaHeaders.RECEIVED_PARTITION) int partition,
             @Header(KafkaHeaders.OFFSET) long offset) {
-    	    	
+    	
+    	try {
+
+    	    if ("v1".equals(eventVersion)) {
+
+    	        Order order =
+    	                objectMapper.readValue(payload, Order.class);
+
+    	        processV1(order,
+    	                eventType,
+    	                eventVersion,
+    	                source,
+    	                correlationId,
+    	                ack,
+    	                partition,
+    	                offset);
+
+    	    } else if ("v2".equals(eventVersion)) {
+
+    	        OrderV2 order =
+    	                objectMapper.readValue(payload, OrderV2.class);
+
+    	        processV2(order,
+    	                eventType,
+    	                eventVersion,
+    	                source,
+    	                correlationId,
+    	                ack,
+    	                partition,
+    	                offset);
+
+    	    } else {
+
+    	        throw new IllegalArgumentException(
+    	                "Unsupported event version : " + eventVersion
+    	        );
+
+    	    }
+
+    	}
+    	catch (JsonProcessingException ex) {
+    	    throw new IllegalArgumentException("Invalid event payload", ex);
+    	}
+    }
+    
+    private void processV1(
+    		Order order,
+            String eventType,
+            String eventVersion,
+            String source,
+            String correlationId,
+            Acknowledgment ack,
+            int partition,
+            long offset){
+    	
+    	logHeaders(eventType, eventVersion, source, correlationId);
+
+        log.info("Processing V1");
+
+        processBusiness(order, ack, partition, offset);
+        
+    }
+    
+    private void processV2(
+    		OrderV2 order,
+            String eventType,
+            String eventVersion,
+            String source,
+            String correlationId,
+            Acknowledgment ack,
+            int partition,
+            long offset){
+    	
+    	logHeaders(eventType, eventVersion, source, correlationId);
+
+        log.info("Processing V2");
+
+        processBusiness(order, ack, partition, offset);
+        
+    }
+    
+    
+    
+    private void logHeaders(
+    		String eventType,
+            String eventVersion,
+            String source,
+            String correlationId
+    	    ) {
+		log.info("--------------------------------");
+		log.info("Message Headers");
+		log.info("--------------------------------");
+
+		log.info("Event Type    : {}", eventType);
+		log.info("Version       : {}", eventVersion);
+		log.info("Source        : {}", source);
+		log.info("CorrelationId : {}", correlationId);	
+    }
+    
+    private void processBusiness(
+    		Order order, 
+    		Acknowledgment ack,
+            int partition,
+            long offset
+    		) {
+    	
     	if(order.getOrderId() % 2 == 0){
 		    throw new RuntimeException("Retry Test");
 		}
@@ -50,16 +164,7 @@ public class OrderConsumer {
 
 		}
     	
-		log.info("--------------------------------");
-		log.info("Message Headers");
-		log.info("--------------------------------");
-
-		log.info("Event Type    : {}", eventType);
-		log.info("Version       : {}", eventVersion);
-		log.info("Source        : {}", source);
-		log.info("CorrelationId : {}", correlationId);
-
-		log.info("--------------------------------");
+    	log.info("--------------------------------");
 
 		log.info("ORDER CONSUMER");
 		log.info("Partition : {}", partition);
@@ -81,7 +186,56 @@ public class OrderConsumer {
     	ack.acknowledge();
 
         log.info("Offset committed manually.");
-
     }
+    
+    private void processBusiness(
+    		OrderV2 order, 
+    		Acknowledgment ack,
+            int partition,
+            long offset
+    		) {
+    	
+    	if(order.getOrderId() % 2 == 0){
+		    throw new RuntimeException("Retry Test");
+		}
+    	
+    	if(order.getCustomerName().equalsIgnoreCase("ERROR")){
 
+		    throw new RuntimeException(
+		            "Temporary processing error"
+		    );
+
+		}
+		
+		if(order.getCustomerName().isBlank()){
+
+		    throw new IllegalArgumentException(
+		            "Customer name is mandatory"
+		    );
+
+		}
+    	
+    	log.info("--------------------------------");
+
+		log.info("ORDER CONSUMER");
+		log.info("Partition : {}", partition);
+		log.info("Offset    : {}", offset);
+		log.info("Order ID  : {}", order.getOrderId());
+
+		log.info("--------------------------------");
+
+		log.info("Processing order...");
+		log.info("Order ID : {}", order.getOrderId());
+    	try {
+			Thread.sleep(3000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+
+    	log.info("Business completed.");
+    	
+    	ack.acknowledge();
+
+        log.info("Offset committed manually.");
+    }
 }
