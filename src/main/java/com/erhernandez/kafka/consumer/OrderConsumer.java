@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.erhernandez.kafka.dto.Order;
 import com.erhernandez.kafka.dto.OrderV2;
+import com.erhernandez.kafka.event.EventType;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -114,12 +115,102 @@ public class OrderConsumer {
     	logHeaders(eventType, eventVersion, source, correlationId);
 
         log.info("Processing V2");
+        
+        EventType type = EventType.valueOf(eventType);
 
-        processBusiness(order, ack, partition, offset);
+        switch (type) {
+
+        case ORDER_CREATED:
+
+            processCreate(
+                    order,
+                    ack,
+                    partition,
+                    offset);
+
+            break;
+
+        case ORDER_UPDATED:
+
+            processUpdate(
+                    order,
+                    ack,
+                    partition,
+                    offset);
+
+            break;
+
+        case ORDER_CANCELLED:
+
+            processCancel(
+                    order,
+                    ack,
+                    partition,
+                    offset);
+
+            break;
+
+        default:
+
+            throw new IllegalArgumentException(
+                    "Unsupported event type : "
+                            + eventType);
+        }
         
     }
     
+    private void processCreate(
+            OrderV2 order,
+            Acknowledgment ack,
+            int partition,
+            long offset) {
+
+        log.info("========== CREATE ==========");
+        log.info("Creating new order...");
+        log.info("Customer : {}", order.getCustomerName());
+        log.info("--------------------------------");
+        log.info("Creating order {} in database...", order.getOrderId());
+        log.info("Reserving inventory {} ...", order.getOrderId());
+        log.info("Sending confirmation email {} ...", order.getOrderId());
+        log.info("--------------------------------");
+        
+        processBusiness(order, ack, partition, offset);
+    }
     
+    private void processUpdate(
+            OrderV2 order,
+            Acknowledgment ack,
+            int partition,
+            long offset) {
+
+        log.info("========== UPDATE ==========");
+        log.info("Updating existing order...");
+        log.info("Order ID : {}", order.getOrderId());
+        log.info("--------------------------------");
+        log.info("Updating order {} ...", order.getOrderId());
+        log.info("Reserving inventory {} ...", order.getOrderId());
+        log.info("--------------------------------");
+
+        processBusiness(order, ack, partition, offset);
+    }
+    
+    private void processCancel(
+            OrderV2 order,
+            Acknowledgment ack,
+            int partition,
+            long offset) {
+
+        log.info("========== CANCEL ==========");
+        log.info("Cancelling order...");
+        log.info("Order ID : {}", order.getOrderId());
+        log.info("--------------------------------");
+        log.info("Cancelling order {} in database...", order.getOrderId());
+        log.info("Releasing inventory {} ...", order.getOrderId());
+        log.info("Publishing refund event {} ...", order.getOrderId());
+        log.info("--------------------------------");
+        
+        processBusiness(order, ack, partition, offset);
+    }
     
     private void logHeaders(
     		String eventType,

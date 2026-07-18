@@ -6,6 +6,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import com.erhernandez.kafka.dto.OrderV2;
+import com.erhernandez.kafka.event.EventType;
 
 import java.nio.charset.StandardCharsets;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -25,7 +26,7 @@ private final KafkaTemplate<String, OrderV2> kafkaTemplate;
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    public void send(OrderV2 order) {
+    public void send(OrderV2 order, EventType eventType) {
 
         String key = order.getOrderId().toString();
         String correlationId = UUID.randomUUID().toString();
@@ -58,7 +59,7 @@ private final KafkaTemplate<String, OrderV2> kafkaTemplate;
         record.headers().add(
                 new RecordHeader(
                         "eventType",
-                        "ORDER_CREATED".getBytes(StandardCharsets.UTF_8)
+                        eventType.name().getBytes(StandardCharsets.UTF_8)
                 )
         );
         
@@ -66,10 +67,11 @@ private final KafkaTemplate<String, OrderV2> kafkaTemplate;
    
         log.info("***********************");
         log.info("Order V2 sent");
-        log.info("Version   : v2");
-        log.info("Key       : {}", key);
-        log.info("Customer  : {}", order.getCustomerName());
-        log.info("priority  : {}", order.getPriority());
+        log.info("Event Type : {}", eventType);
+        log.info("Version    : v2");
+        log.info("Key        : {}", key);
+        log.info("Customer   : {}", order.getCustomerName());
+        log.info("Priority   : {}", order.getPriority());
         log.info("Correlation ID : {}", correlationId);
         log.info("***********************");
     }

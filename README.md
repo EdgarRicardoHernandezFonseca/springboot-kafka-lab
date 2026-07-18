@@ -53,15 +53,26 @@ src
 
 | Version | Feature | Status |
 |----------|---------|--------|
+| v1.0.0 | Hello Kafka – Basic Infrastructure | ✅ |
 | v1.1.0 | Kafka Producer | ✅ |
 | v1.2.0 | Kafka Consumer | ✅ |
-| v1.3.0 | Consumer Groups | ✅ |
-| v1.4.0 | Manual Acknowledgement | ✅ |
-| v1.5.0 | Retry Mechanism | ✅ |
-| v1.6.0 | Dead Letter Topic (DLT) | ✅ |
+| v1.2.1 | Kafka Dual Listener Configuration | ✅ |
+| v1.3.0 | JSON Serialization | ✅ |
+| v1.4.0 | Message Keys and Partitions | ✅ |
+| v1.5.0 | Consumer Groups & Parallel Processing | ✅ |
+| v1.5.1 | Consumer Group Rebalancing | ✅ |
+| v1.5.2 | Horizontal Scaling with Multiple Spring Boot Instances | ✅ |
+| v1.6.0 | Offset Management Fundamentals | ✅ |
+| v1.6.1 | Manual Commit and AckMode.MANUAL | ✅ |
+| v1.6.2 | Retry con DefaultErrorHandler | ✅ |
+| v1.6.3 | Dead Letter Topic (DLT) | ✅ |
 | v1.6.4 | Non-Retryable Exceptions | ✅ |
 | v1.7.0 | Kafka Message Headers (Sending) | ✅ |
-| v1.7.1 | Kafka Message Headers (Reading) | 🚧 |
+| v1.7.1 | Kafka Message Headers (Reading) | ✅ |
+| v1.7.2 | Correlation ID | ✅ |
+| v1.7.3 | Event Versioning | ✅ |
+| v1.7.4 | Event Type Routing | ✅ |
+| v1.7.5 | Production Example | 🚧 |
 
 ---
 
@@ -217,6 +228,8 @@ docs/
     README-v1.7.0.md
     README-v1.7.1.md
     README-v1.7.2.md
+    README-v1.7.3.md
+    README-v1.7.4.md
 ```
 
 Each document explains:
