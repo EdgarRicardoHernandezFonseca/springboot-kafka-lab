@@ -5,10 +5,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import com.erhernandez.kafka.commons.LogConstants;
 import com.erhernandez.kafka.dto.OrderV2;
 import com.erhernandez.kafka.event.EventType;
 
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.internals.RecordHeader;
 
@@ -19,7 +22,9 @@ public class OrderProducerV2 {
 	
 private final KafkaTemplate<String, OrderV2> kafkaTemplate;
     
-    private static final Logger log =
+	private static final LogConstants LogConstants = new LogConstants();
+	
+	private static final Logger log =
 	        LoggerFactory.getLogger(OrderProducerV2.class);
 
     public OrderProducerV2(KafkaTemplate<String, OrderV2> kafkaTemplate) {
@@ -28,8 +33,12 @@ private final KafkaTemplate<String, OrderV2> kafkaTemplate;
 
     public void send(OrderV2 order, EventType eventType) {
 
+    	
+    	
         String key = order.getOrderId().toString();
         String correlationId = UUID.randomUUID().toString();
+        
+        
 
         ProducerRecord<String, OrderV2> record =
                 new ProducerRecord<>(
@@ -63,16 +72,41 @@ private final KafkaTemplate<String, OrderV2> kafkaTemplate;
                 )
         );
         
-        kafkaTemplate.send(record);
-   
-        log.info("***********************");
-        log.info("Order V2 sent");
-        log.info("Event Type : {}", eventType);
-        log.info("Version    : v2");
-        log.info("Key        : {}", key);
-        log.info("Customer   : {}", order.getCustomerName());
-        log.info("Priority   : {}", order.getPriority());
+        log.info(LogConstants.LINE);
+        log.info("ORDER EVENT PUBLISHING STARTED");
+        log.info(LogConstants.LINE);
+        log.info("");
+        log.info("Receiving order request...");
+        log.info("");
+        log.info("Validating request payload...");    
+        log.info("");
+        log.info("Generating Correlation ID...");    
+        log.info("");
+        log.info("Building Kafka Headers...");        
+        log.info("");
+        log.info("Building Kafka Message...");
+        log.info("");
+        log.info(LogConstants.SECTION);
+        log.info("Message Metadata");
         log.info("Correlation ID : {}", correlationId);
-        log.info("***********************");
+        log.info("Event Type     : {}", eventType);
+        log.info("Event Version  : v2");
+        log.info("Source         : springboot-kafka-lab");
+        log.info("Topic			 : orders");
+        log.info("Order ID       : {}", order.getOrderId());
+        Instant timestamp = Instant.now();
+        log.info("Timestamp		 : {}", timestamp);
+        log.info(LogConstants.SECTION);
+        log.info("");
+        log.info("Publishing to Topic orders...");        
+
+        kafkaTemplate.send(record);
+        
+        log.info("");
+        log.info("Message published successfully.");        
+        log.info("");
+        log.info(LogConstants.LINE);
+        log.info("ORDER PUBLISHING FINISHED");
+        log.info(LogConstants.LINE);       
     }
 }
