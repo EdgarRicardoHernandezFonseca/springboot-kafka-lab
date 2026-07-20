@@ -72,7 +72,8 @@ src
 | v1.7.2 | Correlation ID | ✅ |
 | v1.7.3 | Event Versioning | ✅ |
 | v1.7.4 | Event Type Routing | ✅ |
-| v1.7.5 | Production Example | 🚧 |
+| v1.7.5 | Production Example | ✅ |
+| v1.8.0 | Multiple Consumers and Concurrent Processing | 🚧 |
 
 ---
 
@@ -230,6 +231,8 @@ docs/
     README-v1.7.2.md
     README-v1.7.3.md
     README-v1.7.4.md
+    README-v1.7.5.md
+    README-v1.8.0.md
 ```
 
 Each document explains:
