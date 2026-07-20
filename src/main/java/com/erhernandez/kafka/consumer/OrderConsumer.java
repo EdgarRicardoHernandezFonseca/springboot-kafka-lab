@@ -51,7 +51,8 @@ public class OrderConsumer {
 
     @KafkaListener(
     		topics = "orders", 
-    		groupId = "order-processing"
+    		groupId = "order-processing",
+            containerFactory = "kafkaListenerContainerFactory"
             )
     public void consume(
     		String payload,
@@ -136,7 +137,7 @@ public class OrderConsumer {
             long offset){
     	
     	logHeaders(eventType, eventVersion, source, correlationId, partition, offset);
-
+    	
     	log.info("");
         log.info("Processing V2");
         log.info("");
@@ -264,12 +265,14 @@ public class OrderConsumer {
         log.info(LogConstants.LINE);
         log.info("ORDER PROCESSING STARTED");
         log.info(LogConstants.LINE);
+        log.info("Consumer Instance : {}", Thread.currentThread().getName().replace("org.springframework.kafka.",""));
+    	log.info("Consumer Group  : order-processing");
+    	log.info("Partition       : {}", partition);
+    	log.info("Offset          : {}", offset);
         log.info("Correlation ID : {}", correlationId);
         log.info("Event Type     : {}", eventType);
         log.info("Event Version  : {}", eventVersion);
-        log.info("Source         : {}", source);
-        log.info("Partition      : {}", partition);
-        log.info("Offset         : {}", offset);        
+        log.info("Source         : {}", source);      
         Instant timestamp = Instant.now();
         log.info("Timestamp		 : {}", timestamp);
         
