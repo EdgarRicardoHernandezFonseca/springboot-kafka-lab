@@ -260,3 +260,23 @@ These capabilities make Kafka one of the most widely used event streaming platfo
 # Next Step
 
 In the next version (**v1.8.1**), this project will configure multiple Kafka consumers to demonstrate concurrent message processing, partition assignment, and automatic load balancing in a real Spring Boot application.
+
+---
+
+# Author
+
+**Edgar Ricardo Hernández Fonseca**
+
+Backend Developer
+
+Java | Spring Boot | REST APIs | AWS
+
+LinkedIn: *https://linkedin.com/in/edgar-ricardo-hernandez-fonseca*
+
+GitHub: *https://github.com/EdgarRicardoHernandezFonseca*
+
+---
+
+# License
+
+This project is available for educational and demonstration purposes.

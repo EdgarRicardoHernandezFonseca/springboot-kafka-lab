@@ -478,3 +478,23 @@ Topics to be covered:
 - Horizontal Scalability
 
 This version will demonstrate how Kafka distributes partitions among consumers while maintaining ordering guarantees.
+
+---
+
+# Author
+
+**Edgar Ricardo Hernández Fonseca**
+
+Backend Developer
+
+Java | Spring Boot | REST APIs | AWS
+
+LinkedIn: *https://linkedin.com/in/edgar-ricardo-hernandez-fonseca*
+
+GitHub: *https://github.com/EdgarRicardoHernandezFonseca*
+
+---
+
+# License
+
+This project is available for educational and demonstration purposes.

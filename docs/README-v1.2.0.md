@@ -270,3 +270,23 @@ The application now supports complete asynchronous communication:
 - Kafka UI for topic visualization
 
 This version demonstrates the complete publish-and-consume messaging flow using Apache Kafka and Spring Boot.
+
+---
+
+# Author
+
+**Edgar Ricardo Hernández Fonseca**
+
+Backend Developer
+
+Java | Spring Boot | REST APIs | AWS
+
+LinkedIn: *https://linkedin.com/in/edgar-ricardo-hernandez-fonseca*
+
+GitHub: *https://github.com/EdgarRicardoHernandezFonseca*
+
+---
+
+# License
+
+This project is available for educational and demonstration purposes.

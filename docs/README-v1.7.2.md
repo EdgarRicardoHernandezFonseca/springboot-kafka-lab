@@ -198,3 +198,23 @@ The same Correlation ID is preserved throughout the complete event pipeline.
 **v1.7.2**
 
 Implemented Correlation ID propagation using Kafka message headers across producers and consumers.
+
+---
+
+# Author
+
+**Edgar Ricardo Hernández Fonseca**
+
+Backend Developer
+
+Java | Spring Boot | REST APIs | AWS
+
+LinkedIn: *https://linkedin.com/in/edgar-ricardo-hernandez-fonseca*
+
+GitHub: *https://github.com/EdgarRicardoHernandezFonseca*
+
+---
+
+# License
+
+This project is available for educational and demonstration purposes.

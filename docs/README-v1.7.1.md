@@ -258,3 +258,23 @@ Current project evolution:
 Next step:
 
 Implement Correlation IDs to uniquely identify and trace events across multiple microservices.
+
+---
+
+# Author
+
+**Edgar Ricardo Hernández Fonseca**
+
+Backend Developer
+
+Java | Spring Boot | REST APIs | AWS
+
+LinkedIn: *https://linkedin.com/in/edgar-ricardo-hernandez-fonseca*
+
+GitHub: *https://github.com/EdgarRicardoHernandezFonseca*
+
+---
+
+# License
+
+This project is available for educational and demonstration purposes.

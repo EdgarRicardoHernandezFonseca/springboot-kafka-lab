@@ -400,3 +400,23 @@ This version introduces several production-oriented practices:
 - Enterprise-style code organization
 
 Although simplified for educational purposes, the architecture closely resembles the event-driven workflow used in modern microservice-based systems.
+
+---
+
+# Author
+
+**Edgar Ricardo Hernández Fonseca**
+
+Backend Developer
+
+Java | Spring Boot | REST APIs | AWS
+
+LinkedIn: *https://linkedin.com/in/edgar-ricardo-hernandez-fonseca*
+
+GitHub: *https://github.com/EdgarRicardoHernandezFonseca*
+
+---
+
+# License
+
+This project is available for educational and demonstration purposes.

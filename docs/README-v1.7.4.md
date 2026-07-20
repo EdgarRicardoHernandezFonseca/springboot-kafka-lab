@@ -357,3 +357,23 @@ In this version we implemented the **Event Type Routing** pattern.
 Instead of creating multiple Kafka topics for each business action, all Order events are published to a single topic and differentiated using the **eventType** header.
 
 Together with **eventVersion**, this approach allows Kafka consumers to support multiple business operations while maintaining payload compatibility and keeping the architecture simple, scalable, and closer to real-world enterprise event-driven systems.
+
+---
+
+# Author
+
+**Edgar Ricardo Hernández Fonseca**
+
+Backend Developer
+
+Java | Spring Boot | REST APIs | AWS
+
+LinkedIn: *https://linkedin.com/in/edgar-ricardo-hernandez-fonseca*
+
+GitHub: *https://github.com/EdgarRicardoHernandezFonseca*
+
+---
+
+# License
+
+This project is available for educational and demonstration purposes.

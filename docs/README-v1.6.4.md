@@ -110,3 +110,25 @@ Specific exceptions can be marked as non-retryable using:
 errorHandler.addNotRetryableExceptions(
         IllegalArgumentException.class
 );
+
+```
+
+---
+
+# Author
+
+**Edgar Ricardo Hernández Fonseca**
+
+Backend Developer
+
+Java | Spring Boot | REST APIs | AWS
+
+LinkedIn: *https://linkedin.com/in/edgar-ricardo-hernandez-fonseca*
+
+GitHub: *https://github.com/EdgarRicardoHernandezFonseca*
+
+---
+
+# License
+
+This project is available for educational and demonstration purposes.

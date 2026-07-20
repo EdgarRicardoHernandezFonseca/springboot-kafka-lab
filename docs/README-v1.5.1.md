@@ -253,3 +253,23 @@ This version demonstrates:
 - High availability in Kafka consumers
 
 Understanding Consumer Rebalancing is essential for designing reliable event-driven microservices capable of handling failures and scaling automatically.
+
+---
+
+# Author
+
+**Edgar Ricardo Hernández Fonseca**
+
+Backend Developer
+
+Java | Spring Boot | REST APIs | AWS
+
+LinkedIn: *https://linkedin.com/in/edgar-ricardo-hernandez-fonseca*
+
+GitHub: *https://github.com/EdgarRicardoHernandezFonseca*
+
+---
+
+# License
+
+This project is available for educational and demonstration purposes.

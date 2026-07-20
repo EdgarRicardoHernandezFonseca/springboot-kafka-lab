@@ -118,7 +118,7 @@ public class OrderConsumer {
             int partition,
             long offset){
     	
-    	logHeaders(eventType, eventVersion, source, correlationId, partition, offset);
+    	logHeaders(order, eventType, eventVersion, source, correlationId, partition, offset);
 
         log.info("Processing V1");
 
@@ -136,7 +136,7 @@ public class OrderConsumer {
             int partition,
             long offset){
     	
-    	logHeaders(eventType, eventVersion, source, correlationId, partition, offset);
+    	logHeadersV2(order, eventType, eventVersion, source, correlationId, partition, offset);
     	
     	log.info("");
         log.info("Processing V2");
@@ -253,6 +253,7 @@ public class OrderConsumer {
     }
     
     private void logHeaders(
+    		Order order,
     		String eventType,
             String eventVersion,
             String source,
@@ -265,24 +266,56 @@ public class OrderConsumer {
         log.info(LogConstants.LINE);
         log.info("ORDER PROCESSING STARTED");
         log.info(LogConstants.LINE);
-        log.info("Consumer Instance : {}", Thread.currentThread().getName().replace("org.springframework.kafka.",""));
-    	log.info("Consumer Group  : order-processing");
-    	log.info("Partition       : {}", partition);
-    	log.info("Offset          : {}", offset);
-        log.info("Correlation ID : {}", correlationId);
-        log.info("Event Type     : {}", eventType);
-        log.info("Event Version  : {}", eventVersion);
-        log.info("Source         : {}", source);      
+        log.info("Consumer Group           : order-processing");
+        log.info("Consumer Thread Instance : {}", Thread.currentThread().getName().replace("org.springframework.kafka.",""));
+    	log.info("Order ID                 : {}", order.getOrderId());
+    	log.info("Partition                : {}", partition);
+    	log.info("Offset                   : {}", offset);
+        log.info("Correlation ID           : {}", correlationId);
+        log.info("Event Type               : {}", eventType);
+        log.info("Event Version            : {}", eventVersion);
+        log.info("Source                   : {}", source);      
         Instant timestamp = Instant.now();
-        log.info("Timestamp		 : {}", timestamp);
+        log.info("Timestamp		           : {}", timestamp);
         
 		logHeadersFirstPhase();
 		logHeadersSecondPhase();
 		logHeadersThirdPhase();
 		logHeadersFourthPhase();
-		logHeadersFifthPhase();
+		logHeadersFifthPhase();		
+    }
+    
+    private void logHeadersV2(
+    		OrderV2 order,
+    		String eventType,
+            String eventVersion,
+            String source,
+            String correlationId,
+    		int partition,
+            long offset
+    	    ) {
 		
-		
+    	log.info("");
+        log.info(LogConstants.LINE);
+        log.info("ORDER PROCESSING STARTED");
+        log.info(LogConstants.LINE);
+        log.info("Consumer Group           : order-processing");
+        log.info("Consumer Thread Instance : {}", Thread.currentThread().getName().replace("org.springframework.kafka.",""));
+    	log.info("Order ID                 : {}", order.getOrderId());
+    	log.info("Partition                : {}", partition);
+    	log.info("Offset                   : {}", offset);
+        log.info("Correlation ID           : {}", correlationId);
+        log.info("Event Type               : {}", eventType);
+        log.info("Event Version            : {}", eventVersion);
+        log.info("Source                   : {}", source);      
+        Instant timestamp = Instant.now();
+        log.info("Timestamp		           : {}", timestamp);
+        
+		logHeadersFirstPhase();
+		logHeadersSecondPhase();
+		logHeadersThirdPhase();
+		logHeadersFourthPhase();
+		logHeadersFifthPhase();		
     }
     
     private void logHeadersFirstPhase() {
@@ -403,7 +436,7 @@ public class OrderConsumer {
 		log.info("Processing order...");
 		log.info("Order ID : {}", order.getOrderId());
     	try {
-			Thread.sleep(3000);
+			Thread.sleep(5000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}

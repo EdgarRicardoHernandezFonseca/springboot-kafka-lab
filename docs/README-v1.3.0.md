@@ -481,3 +481,23 @@ Version **v1.3.0** introduces one of the most important capabilities in Kafka-ba
 Instead of publishing simple text messages, the Producer now serializes business objects into JSON using Spring Kafka's `JsonSerializer`. Kafka stores these JSON events, and the Consumer automatically reconstructs them into Java objects using `JsonDeserializer`.
 
 This version represents the transition from a basic messaging example to a realistic event-driven communication model, closely resembling how modern Spring Boot microservices exchange business events in production environments.
+
+---
+
+# Author
+
+**Edgar Ricardo Hernández Fonseca**
+
+Backend Developer
+
+Java | Spring Boot | REST APIs | AWS
+
+LinkedIn: *https://linkedin.com/in/edgar-ricardo-hernandez-fonseca*
+
+GitHub: *https://github.com/EdgarRicardoHernandezFonseca*
+
+---
+
+# License
+
+This project is available for educational and demonstration purposes.

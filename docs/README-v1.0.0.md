@@ -211,3 +211,23 @@ Version **v1.0.0** focuses entirely on infrastructure.
 The goal is to understand how to start a Kafka broker using Docker and verify that the environment is ready before introducing producers and consumers.
 
 This version provides the foundation for all subsequent laboratory exercises.
+
+---
+
+# Author
+
+**Edgar Ricardo Hernández Fonseca**
+
+Backend Developer
+
+Java | Spring Boot | REST APIs | AWS
+
+LinkedIn: *https://linkedin.com/in/edgar-ricardo-hernandez-fonseca*
+
+GitHub: *https://github.com/EdgarRicardoHernandezFonseca*
+
+---
+
+# License
+
+This project is available for educational and demonstration purposes.

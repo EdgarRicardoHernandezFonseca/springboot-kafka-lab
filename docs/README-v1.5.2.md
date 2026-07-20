@@ -228,3 +228,23 @@ Version 1.5.2 demonstrates one of Apache Kafka's most important production featu
 By running multiple Spring Boot instances within the same Consumer Group, Kafka automatically distributes partitions, balances the workload, detects failures, and reassigns partitions whenever consumers join or leave the group.
 
 This allows distributed applications to scale efficiently while maintaining high availability and fault tolerance without requiring any changes to the producer code.
+
+---
+
+# Author
+
+**Edgar Ricardo Hernández Fonseca**
+
+Backend Developer
+
+Java | Spring Boot | REST APIs | AWS
+
+LinkedIn: *https://linkedin.com/in/edgar-ricardo-hernandez-fonseca*
+
+GitHub: *https://github.com/EdgarRicardoHernandezFonseca*
+
+---
+
+# License
+
+This project is available for educational and demonstration purposes.

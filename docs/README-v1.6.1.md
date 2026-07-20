@@ -216,3 +216,23 @@ In this version we learned how to:
 - Understand why enterprise applications often prefer Manual Commit over automatic commits.
 
 This version provides the foundation for implementing more advanced reliability features such as retries, dead-letter topics (DLT), and transactional message processing.
+
+---
+
+# Author
+
+**Edgar Ricardo Hernández Fonseca**
+
+Backend Developer
+
+Java | Spring Boot | REST APIs | AWS
+
+LinkedIn: *https://linkedin.com/in/edgar-ricardo-hernandez-fonseca*
+
+GitHub: *https://github.com/EdgarRicardoHernandezFonseca*
+
+---
+
+# License
+
+This project is available for educational and demonstration purposes.

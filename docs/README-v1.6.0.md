@@ -330,10 +330,20 @@ Kafka UI
 
 ---
 
-Version
+# Author
 
-v1.6.0
+**Edgar Ricardo Hernández Fonseca**
 
-Author
+Backend Developer
 
-Edgar Ricardo Hernández Fonseca
+Java | Spring Boot | REST APIs | AWS
+
+LinkedIn: *https://linkedin.com/in/edgar-ricardo-hernandez-fonseca*
+
+GitHub: *https://github.com/EdgarRicardoHernandezFonseca*
+
+---
+
+# License
+
+This project is available for educational and demonstration purposes.
