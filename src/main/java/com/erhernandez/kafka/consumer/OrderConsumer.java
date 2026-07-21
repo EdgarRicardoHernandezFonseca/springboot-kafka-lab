@@ -436,7 +436,7 @@ public class OrderConsumer {
 		log.info("Processing order...");
 		log.info("Order ID : {}", order.getOrderId());
     	try {
-			Thread.sleep(5000);
+			Thread.sleep(3000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}

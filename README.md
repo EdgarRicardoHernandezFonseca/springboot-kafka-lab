@@ -75,8 +75,7 @@ src
 | v1.7.5 | Production Example | ✅ |
 | v1.8.0 | Multiple Consumers and Concurrent Processing | ✅ |
 | v1.8.1 | Multiple Consumers Implementation & Load Distribution | ✅ |
-| v1.8.2 |  | 🚧 |
-| v1.9.0 | Avro y Schema Registry | ⏳ |
+| v1.9.0 | Avro and Schema Registry | 🚧 |
 | v1.9.0 | Database integration using the Outbox pattern to ensure | ⏳ |
 
 ---
@@ -238,6 +237,7 @@ docs/
     README-v1.7.5.md
     README-v1.8.0.md
     README-v1.8.1.md
+    README-v1.9.0.md
 ```
 
 Each document explains:
@@ -317,7 +317,7 @@ This project is available for educational and demonstration purposes.
 | Non-Retryable Exceptions | ✅       |
 | Custom Headers           | ✅       |
 | Reading Headers          | ✅       |
-| Filtering                | 🚧       |
+| Filtering                | ✅       |
 | Avro                     | 🚧       |
 | Kafka Streams            | ⏳       |
 | Transactions             | ⏳       |
