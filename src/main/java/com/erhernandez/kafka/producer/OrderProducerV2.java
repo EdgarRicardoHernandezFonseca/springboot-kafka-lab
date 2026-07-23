@@ -42,6 +42,8 @@ private final KafkaTemplate<String, OrderCreated> kafkaTemplate;
                         .setCustomerName(orderV2.getCustomerName())
                         .setProduct(orderV2.getProduct())
                         .setQuantity(orderV2.getQuantity())
+                        .setPrice(orderV2.getPrice())
+                        .setCreatedAt(Instant.now().toString())
                         .build();
 
 	

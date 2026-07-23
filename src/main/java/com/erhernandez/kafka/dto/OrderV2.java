@@ -18,4 +18,8 @@ public class OrderV2 {
     private String product;
     
     private Integer quantity;
+    
+    private Double price;
+    
+    private String createdAt;
 }
