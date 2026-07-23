@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import com.erhernandez.kafka.avro.OrderCreated;
 import com.erhernandez.kafka.commons.LogConstants;
 import com.erhernandez.kafka.dto.OrderV2;
 import com.erhernandez.kafka.event.EventType;
@@ -20,27 +21,36 @@ import java.util.UUID;
 @Service
 public class OrderProducerV2 {
 	
-private final KafkaTemplate<String, OrderV2> kafkaTemplate;
+private final KafkaTemplate<String, OrderCreated> kafkaTemplate;
     
 	private static final LogConstants LogConstants = new LogConstants();
 	
 	private static final Logger log =
 	        LoggerFactory.getLogger(OrderProducerV2.class);
 
-    public OrderProducerV2(KafkaTemplate<String, OrderV2> kafkaTemplate) {
+    public OrderProducerV2(KafkaTemplate<String, OrderCreated> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    public void send(OrderV2 order, EventType eventType) {
+    public void send(
+    		OrderV2 orderV2,
+    		EventType eventType) {
+    	
+    	OrderCreated order =
+                OrderCreated.newBuilder()
+                        .setOrderId(orderV2.getOrderId())
+                        .setCustomerName(orderV2.getCustomerName())
+                        .setProduct(orderV2.getProduct())
+                        .setQuantity(orderV2.getQuantity())
+                        .build();
 
-    	
-    	
-        String key = order.getOrderId().toString();
+	
+        String key = String.valueOf(order.getOrderId());
         String correlationId = UUID.randomUUID().toString();
         
         
 
-        ProducerRecord<String, OrderV2> record =
+        ProducerRecord<String, OrderCreated> record =
                 new ProducerRecord<>(
                         "orders",
                         String.valueOf(order.getOrderId()),

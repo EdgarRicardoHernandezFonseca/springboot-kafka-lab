@@ -12,6 +12,10 @@ public class OrderV2 {
 	private Long orderId;
 
     private String customerName;
-
+    
     private String priority;
+
+    private String product;
+    
+    private Integer quantity;
 }
