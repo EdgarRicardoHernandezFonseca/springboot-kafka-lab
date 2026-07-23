@@ -130,10 +130,10 @@
 						</goals>
 						<configuration>
 							<sourceDirectory>
-								${project.basedir}/src/main/avro
+								${project.basedir}/src/main/resources/avro
 							</sourceDirectory>
 							<outputDirectory>
-								${project.basedir}/target/generated-sources/avro
+								${project.build.directory}/generated-sources/avro
 							</outputDirectory>
 						</configuration>
 					</execution>
