@@ -76,7 +76,7 @@ src
 | v1.8.0 | Multiple Consumers and Concurrent Processing | ✅ |
 | v1.8.1 | Multiple Consumers Implementation & Load Distribution | ✅ |
 | v1.9.0 | Avro and Schema Registry | 🚧 |
-| v1.9.0 | Database integration using the Outbox pattern to ensure | ⏳ |
+| v2.0.0 | Database integration using the Outbox pattern to ensure | ⏳ |
 
 ---
 

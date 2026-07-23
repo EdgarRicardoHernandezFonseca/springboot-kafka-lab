@@ -1,0 +1,46 @@
+{
+  "type": "record",
+  "namespace": "com.erhernandez.kafka.avro",
+  "name": "OrderCreated",
+  "doc": "Event published when a new order is created.",
+
+  "fields": [
+
+    {
+      "name": "orderId",
+      "type": "long",
+      "doc": "Unique order identifier."
+    },
+
+    {
+      "name": "customerName",
+      "type": "string",
+      "doc": "Customer full name."
+    },
+
+    {
+      "name": "product",
+      "type": "string",
+      "doc": "Product name."
+    },
+
+    {
+      "name": "quantity",
+      "type": "int",
+      "doc": "Purchased quantity."
+    },
+
+    {
+      "name": "price",
+      "type": "double",
+      "doc": "Unit price."
+    },
+
+    {
+      "name": "createdAt",
+      "type": "string",
+      "doc": "Event creation timestamp."
+    }
+
+  ]
+}
