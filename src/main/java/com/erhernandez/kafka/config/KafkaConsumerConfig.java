@@ -7,22 +7,21 @@ import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.DefaultErrorHandler;
 
+import com.erhernandez.kafka.avro.OrderCreated;
+
 @Configuration
 public class KafkaConsumerConfig {
 
 	@Bean
-	public ConcurrentKafkaListenerContainerFactory<String,Object>
+	public ConcurrentKafkaListenerContainerFactory<String, OrderCreated>
 	kafkaListenerContainerFactory(
+	        ConsumerFactory<String, OrderCreated> consumerFactory,
+	        DefaultErrorHandler defaultErrorHandler) {
 
-	        ConsumerFactory<String,Object> consumerFactory,
-
-	        DefaultErrorHandler defaultErrorHandler){
-
-	    ConcurrentKafkaListenerContainerFactory<String,Object> factory =
+	    ConcurrentKafkaListenerContainerFactory<String, OrderCreated> factory =
 	            new ConcurrentKafkaListenerContainerFactory<>();
 
 	    factory.setConsumerFactory(consumerFactory);
-	    
 	    factory.setConcurrency(3);
 
 	    factory.getContainerProperties()
@@ -31,7 +30,5 @@ public class KafkaConsumerConfig {
 	    factory.setCommonErrorHandler(defaultErrorHandler);
 
 	    return factory;
-
 	}
-
 }

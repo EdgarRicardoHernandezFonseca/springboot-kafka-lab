@@ -9,17 +9,13 @@ import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.stereotype.Service;
-
+import com.erhernandez.kafka.avro.OrderCreated;
 import com.erhernandez.kafka.commons.LogConstants;
-import com.erhernandez.kafka.dto.Order;
-import com.erhernandez.kafka.dto.OrderV2;
 import com.erhernandez.kafka.event.EventType;
 import com.erhernandez.kafka.service.AuditService;
 import com.erhernandez.kafka.service.InventoryService;
 import com.erhernandez.kafka.service.NotificationService;
 import com.erhernandez.kafka.service.OrderService;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class OrderConsumer {
@@ -29,20 +25,17 @@ public class OrderConsumer {
 	private static final Logger log =
 	        LoggerFactory.getLogger(OrderConsumer.class);
 	
-	private final ObjectMapper objectMapper;
 	private final OrderService orderService;
 	private final InventoryService inventoryService;
 	private final NotificationService notificationService;
 	private final AuditService auditService;
 
 	public OrderConsumer(
-	        ObjectMapper objectMapper,
 	        OrderService orderService,
 	        InventoryService inventoryService,
 	        NotificationService notificationService,
 	        AuditService auditService) {
 
-	    this.objectMapper = objectMapper;
 	    this.orderService = orderService;
 	    this.inventoryService = inventoryService;
 	    this.notificationService = notificationService;
@@ -55,7 +48,7 @@ public class OrderConsumer {
             containerFactory = "kafkaListenerContainerFactory"
             )
     public void consume(
-    		String payload,
+    		OrderCreated order,
     		@Header("eventType") String eventType,
             @Header("eventVersion") String eventVersion,
             @Header("source") String source,
@@ -64,125 +57,38 @@ public class OrderConsumer {
             @Header(KafkaHeaders.RECEIVED_PARTITION) int partition,
             @Header(KafkaHeaders.OFFSET) long offset) {
     	
-    	try {
-
-    	    if ("v1".equals(eventVersion)) {
-
-    	        Order order =
-    	                objectMapper.readValue(payload, Order.class);
-
-    	        processV1(order,
-    	                eventType,
-    	                eventVersion,
-    	                source,
-    	                correlationId,
-    	                ack,
-    	                partition,
-    	                offset);
-
-    	    } else if ("v2".equals(eventVersion)) {
-
-    	        OrderV2 order =
-    	                objectMapper.readValue(payload, OrderV2.class);
-
-    	        processV2(order,
-    	                eventType,
-    	                eventVersion,
-    	                source,
-    	                correlationId,
-    	                ack,
-    	                partition,
-    	                offset);
-
-    	    } else {
-
-    	        throw new IllegalArgumentException(
-    	                "Unsupported event version : " + eventVersion
-    	        );
-
-    	    }
-
-    	}
-    	catch (JsonProcessingException ex) {
-    	    throw new IllegalArgumentException("Invalid event payload", ex);
-    	}
-    }
-    
-    private void processV1(
-    		Order order,
-            String eventType,
-            String eventVersion,
-            String source,
-            String correlationId,
-            Acknowledgment ack,
-            int partition,
-            long offset){
-    	
-    	logHeaders(order, eventType, eventVersion, source, correlationId, partition, offset);
-
-        log.info("Processing V1");
-
-        processBusiness(order, ack, partition, offset);
-        
-    }
-    
-    private void processV2(
-    		OrderV2 order,
-            String eventType,
-            String eventVersion,
-            String source,
-            String correlationId,
-            Acknowledgment ack,
-            int partition,
-            long offset){
-    	
-    	logHeadersV2(order, eventType, eventVersion, source, correlationId, partition, offset);
+    	logHeaders(
+                order,
+                eventType,
+                eventVersion,
+                source,
+                correlationId,
+                partition,
+                offset);
     	
     	log.info("");
-        log.info("Processing V2");
-        log.info("");
         log.info("Executing Business Logic...");
-        
-        EventType type = EventType.valueOf(eventType);
+    	
+    	EventType type =
+                EventType.valueOf(eventType);
 
-     // Route the event according to its business type.
         switch (type) {
 
-        case ORDER_CREATED:
+            case ORDER_CREATED:
+                processCreate(order, ack, partition, offset);
+                break;
 
-            processCreate(
-                    order,
-                    ack,
-                    partition,
-                    offset);
+            case ORDER_UPDATED:
+                processUpdate(order, ack, partition, offset);
+                break;
 
-            break;
+            case ORDER_CANCELLED:
+                processCancel(order, ack, partition, offset);
+                break;
 
-        case ORDER_UPDATED:
-
-            processUpdate(
-                    order,
-                    ack,
-                    partition,
-                    offset);
-
-            break;
-
-        case ORDER_CANCELLED:
-
-            processCancel(
-                    order,
-                    ack,
-                    partition,
-                    offset);
-
-            break;
-
-        default:
-
-            throw new IllegalArgumentException(
-                    "Unsupported event type : "
-                            + eventType);
+            default:
+                throw new IllegalArgumentException(
+                        "Unsupported event");
         }
         
         log.info("");
@@ -191,11 +97,10 @@ public class OrderConsumer {
         log.info(LogConstants.LINE);
         log.info("ORDER PROCESSING FINISHED");
         log.info(LogConstants.LINE);
-        
     }
-    
+   
     private void processCreate(
-            OrderV2 order,
+    		OrderCreated order,
             Acknowledgment ack,
             int partition,
             long offset) {
@@ -215,7 +120,7 @@ public class OrderConsumer {
     }
     
     private void processUpdate(
-            OrderV2 order,
+    		OrderCreated order,
             Acknowledgment ack,
             int partition,
             long offset) {
@@ -233,7 +138,7 @@ public class OrderConsumer {
     }
     
     private void processCancel(
-            OrderV2 order,
+    		OrderCreated order,
             Acknowledgment ack,
             int partition,
             long offset) {
@@ -253,40 +158,7 @@ public class OrderConsumer {
     }
     
     private void logHeaders(
-    		Order order,
-    		String eventType,
-            String eventVersion,
-            String source,
-            String correlationId,
-    		int partition,
-            long offset
-    	    ) {
-		
-    	log.info("");
-        log.info(LogConstants.LINE);
-        log.info("ORDER PROCESSING STARTED");
-        log.info(LogConstants.LINE);
-        log.info("Consumer Group           : order-processing");
-        log.info("Consumer Thread Instance : {}", Thread.currentThread().getName().replace("org.springframework.kafka.",""));
-    	log.info("Order ID                 : {}", order.getOrderId());
-    	log.info("Partition                : {}", partition);
-    	log.info("Offset                   : {}", offset);
-        log.info("Correlation ID           : {}", correlationId);
-        log.info("Event Type               : {}", eventType);
-        log.info("Event Version            : {}", eventVersion);
-        log.info("Source                   : {}", source);      
-        Instant timestamp = Instant.now();
-        log.info("Timestamp		           : {}", timestamp);
-        
-		logHeadersFirstPhase();
-		logHeadersSecondPhase();
-		logHeadersThirdPhase();
-		logHeadersFourthPhase();
-		logHeadersFifthPhase();		
-    }
-    
-    private void logHeadersV2(
-    		OrderV2 order,
+    		OrderCreated order,
     		String eventType,
             String eventVersion,
             String source,
@@ -347,60 +219,9 @@ public class OrderConsumer {
         log.info("");
         log.info("Deserializing Payload...");
     }
-    
-    private void processBusiness(
-    		Order order, 
-    		Acknowledgment ack,
-            int partition,
-            long offset
-    		) {
-    	
-    	if(order.getOrderId() % 2 == 0){
-		    throw new RuntimeException("Retry Test");
-		}
-    	
-    	if(order.getCustomerName().equalsIgnoreCase("ERROR")){
-
-		    throw new RuntimeException(
-		            "Temporary processing error"
-		    );
-
-		}
-		
-		if(order.getCustomerName().isBlank()){
-
-		    throw new IllegalArgumentException(
-		            "Customer name is mandatory"
-		    );
-
-		}
-    	
-    	log.info(LogConstants.SECTION);
-
-		log.info("ORDER CONSUMER");
-		log.info("Partition : {}", partition);
-		log.info("Offset    : {}", offset);
-		log.info("Order ID  : {}", order.getOrderId());
-
-		log.info(LogConstants.SECTION);
-
-		log.info("Processing order...");
-		log.info("Order ID : {}", order.getOrderId());
-    	try {
-			Thread.sleep(3000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-
-    	log.info("Business completed.");
-    	
-    	ack.acknowledge();
-
-        log.info("Offset committed manually.");
-    }
-    
+        
     private void completeProcessing(
-    		OrderV2 order, 
+    		OrderCreated order, 
     		Acknowledgment ack,
             int partition,
             long offset
@@ -410,7 +231,7 @@ public class OrderConsumer {
 		    throw new RuntimeException("Retry Test");
 		}
     	
-    	if(order.getCustomerName().equalsIgnoreCase("ERROR")){
+    	if(order.getCustomerName() == "ERROR") {
 
 		    throw new RuntimeException(
 		            "Temporary processing error"
@@ -418,7 +239,7 @@ public class OrderConsumer {
 
 		}
 		
-		if(order.getCustomerName().isBlank()){
+		if(order.getCustomerName().isEmpty()){
 
 		    throw new IllegalArgumentException(
 		            "Customer name is mandatory"
