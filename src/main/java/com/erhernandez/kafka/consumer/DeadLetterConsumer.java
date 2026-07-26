@@ -6,7 +6,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
 
-import com.erhernandez.kafka.dto.Notification;
+import com.erhernandez.kafka.avro.Notification;
 import com.erhernandez.kafka.dto.Order;
 import com.erhernandez.kafka.dto.OrderV2;
 import com.fasterxml.jackson.databind.ObjectMapper;

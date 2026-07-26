@@ -1,6 +1,5 @@
 package com.erhernandez.kafka.producer;
 
-import com.erhernandez.kafka.dto.Notification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -8,6 +7,8 @@ import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
+
+import com.erhernandez.kafka.avro.Notification;
 
 @Service
 public class NotificationProducer {
@@ -27,7 +28,7 @@ public class NotificationProducer {
     	        MessageBuilder
     	            .withPayload(notification)
     	            .setHeader(KafkaHeaders.TOPIC, "notifications")
-    	            .setHeader(KafkaHeaders.KEY, notification.getOrderId().toString())
+    	            .setHeader(KafkaHeaders.KEY, String.valueOf(notification.getOrderId()))
     	            .setHeader("eventType", "ORDER_CREATED")
     	            .setHeader("eventVersion", "v1")
     	            .setHeader("source", "springboot-kafka-lab")

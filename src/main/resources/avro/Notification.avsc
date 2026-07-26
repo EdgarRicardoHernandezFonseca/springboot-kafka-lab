@@ -1,0 +1,15 @@
+{
+  "namespace": "com.erhernandez.kafka.avro",
+  "type": "record",
+  "name": "Notification",
+  "fields": [
+    {
+      "name": "orderId",
+      "type": "long"
+    },
+    {
+      "name": "message",
+      "type": "string"
+    }
+  ]
+}

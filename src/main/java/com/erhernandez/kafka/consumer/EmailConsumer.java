@@ -8,7 +8,7 @@ import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Service;
 
-import com.erhernandez.kafka.dto.Notification;
+import com.erhernandez.kafka.avro.Notification;
 
 @Service
 public class EmailConsumer {
@@ -18,7 +18,8 @@ public class EmailConsumer {
 	
     @KafkaListener(
             topics = "notifications",
-            groupId = "email-service"
+            groupId = "email-service",
+	        containerFactory = "kafkaListenerContainerFactory"
             )
     public void consume(
     		Notification notification,
@@ -35,18 +36,23 @@ public class EmailConsumer {
 		    throw new RuntimeException("Retry Test");
 		}
     	
-    	if(notification.getMessage().equalsIgnoreCase("ERROR")){
+    	if ("ERROR".equalsIgnoreCase(notification.getMessage().toString())) {
 
 		    throw new RuntimeException(
 		            "Temporary processing error"
 		    );
 
 		}
+    	
+    	String customer =
+    			notification.getMessage() == null
+    	        ? null
+    	        : notification.getMessage().toString();
 		
-		if(notification.getMessage().isBlank()){
+    	if (customer == null || customer.isBlank()) {
 
 		    throw new IllegalArgumentException(
-		            "Message is mandatory"
+		            "Customer name is mandatory"
 		    );
 
 		}

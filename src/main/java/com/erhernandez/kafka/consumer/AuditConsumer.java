@@ -8,7 +8,7 @@ import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.stereotype.Service;
 
-import com.erhernandez.kafka.dto.Order;
+import com.erhernandez.kafka.avro.OrderCreated;
 
 @Service
 public class AuditConsumer {
@@ -18,10 +18,11 @@ public class AuditConsumer {
 
 	@KafkaListener(
 	        topics = "orders",
-	        groupId = "audit-service"
-			)
+	        groupId = "audit-service",
+	        containerFactory = "kafkaListenerContainerFactory"
+	)
 	public void consume(
-	        Order order,
+			OrderCreated order,
 	        @Header("eventType") String eventType,
             @Header("eventVersion") String eventVersion,
             @Header("source") String source,
@@ -33,16 +34,21 @@ public class AuditConsumer {
 		if(order.getOrderId() % 2 == 0){
 		    throw new RuntimeException("Retry Test");
 		}
-		
-		if(order.getCustomerName().equalsIgnoreCase("ERROR")){
+    	
+    	if ("ERROR".equalsIgnoreCase(order.getCustomerName().toString())) {
 
 		    throw new RuntimeException(
 		            "Temporary processing error"
 		    );
 
 		}
+    	
+    	String customer =
+    	        order.getCustomerName() == null
+    	        ? null
+    	        : order.getCustomerName().toString();
 		
-		if(order.getCustomerName().isBlank()){
+    	if (customer == null || customer.isBlank()) {
 
 		    throw new IllegalArgumentException(
 		            "Customer name is mandatory"

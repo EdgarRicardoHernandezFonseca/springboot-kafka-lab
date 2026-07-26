@@ -49,7 +49,7 @@ public class OrderConsumer {
             containerFactory = "kafkaListenerContainerFactory"
             )
     public void consume(
-    		@Payload OrderCreated order,
+    		OrderCreated order,
     		@Header("eventType") String eventType,
             @Header("eventVersion") String eventVersion,
             @Header("source") String source,

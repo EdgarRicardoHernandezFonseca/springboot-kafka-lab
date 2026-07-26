@@ -8,8 +8,8 @@ import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.stereotype.Service;
 
-import com.erhernandez.kafka.dto.Notification;
-import com.erhernandez.kafka.dto.Order;
+import com.erhernandez.kafka.avro.Notification;
+import com.erhernandez.kafka.avro.OrderCreated;
 import com.erhernandez.kafka.producer.NotificationProducer;
 
 @Service
@@ -24,12 +24,13 @@ public class NotificationConsumer {
 	    this.notificationProducer = notificationProducer;
 	}
 
-    @KafkaListener(
-            topics = "orders",
-            groupId = "notification-service"
-            )
+	@KafkaListener(
+	        topics = "orders",
+	        groupId = "notification-service",
+	        containerFactory = "kafkaListenerContainerFactory"
+	)
     public void consume(
-    		Order order,
+    		OrderCreated order,
     		@Header("eventType") String eventType,
             @Header("eventVersion") String eventVersion,
             @Header("source") String source,
@@ -39,19 +40,24 @@ public class NotificationConsumer {
             @Header(KafkaHeaders.OFFSET) long offset) {
     	
     	
-    	if(order.getOrderId() % 2 == 0){
+		if(order.getOrderId() % 2 == 0){
 		    throw new RuntimeException("Retry Test");
 		}
     	
-    	if(order.getCustomerName().equalsIgnoreCase("ERROR")){
+    	if ("ERROR".equalsIgnoreCase(order.getCustomerName().toString())) {
 
 		    throw new RuntimeException(
 		            "Temporary processing error"
 		    );
 
 		}
+    	
+    	String customer =
+    	        order.getCustomerName() == null
+    	        ? null
+    	        : order.getCustomerName().toString();
 		
-		if(order.getCustomerName().isBlank()){
+    	if (customer == null || customer.isBlank()) {
 
 		    throw new IllegalArgumentException(
 		            "Customer name is mandatory"
@@ -61,7 +67,7 @@ public class NotificationConsumer {
     	
 		Notification notification =
     	        new Notification(
-    	                order.getOrderId(),
+    	        		order.getOrderId(),
     	                "Order processed successfully");
 
     	notificationProducer.send(notification, correlationId);

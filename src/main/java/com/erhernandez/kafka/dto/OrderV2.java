@@ -68,7 +68,4 @@ public class OrderV2 {
 	public void setPrice(Double price) {
 		this.price = price;
 	}
-    
-    
-    
 }
