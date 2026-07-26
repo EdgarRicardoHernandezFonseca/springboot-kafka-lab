@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Header;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.stereotype.Service;
@@ -48,7 +49,7 @@ public class OrderConsumer {
             containerFactory = "kafkaListenerContainerFactory"
             )
     public void consume(
-    		OrderCreated order,
+    		@Payload OrderCreated order,
     		@Header("eventType") String eventType,
             @Header("eventVersion") String eventVersion,
             @Header("source") String source,
@@ -56,6 +57,8 @@ public class OrderConsumer {
     		Acknowledgment ack,
             @Header(KafkaHeaders.RECEIVED_PARTITION) int partition,
             @Header(KafkaHeaders.OFFSET) long offset) {
+    	
+    	log.info(order.getClass().getName());
     	
     	logHeaders(
                 order,
@@ -217,7 +220,7 @@ public class OrderConsumer {
     private void logHeadersFifthPhase() {
 
         log.info("");
-        log.info("Deserializing Payload...");
+        log.info("Avro payload successfully received...");
     }
         
     private void completeProcessing(
@@ -231,15 +234,20 @@ public class OrderConsumer {
 		    throw new RuntimeException("Retry Test");
 		}
     	
-    	if(order.getCustomerName() == "ERROR") {
+    	if ("ERROR".equalsIgnoreCase(order.getCustomerName().toString())) {
 
 		    throw new RuntimeException(
 		            "Temporary processing error"
 		    );
 
 		}
+    	
+    	String customer =
+    	        order.getCustomerName() == null
+    	        ? null
+    	        : order.getCustomerName().toString();
 		
-		if(order.getCustomerName().isEmpty()){
+    	if (customer == null || customer.isBlank()) {
 
 		    throw new IllegalArgumentException(
 		            "Customer name is mandatory"

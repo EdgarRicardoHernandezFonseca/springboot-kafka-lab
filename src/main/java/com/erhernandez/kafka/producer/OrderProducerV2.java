@@ -37,14 +37,15 @@ private final KafkaTemplate<String, OrderCreated> kafkaTemplate;
     		EventType eventType) {
     	
     	OrderCreated order =
-                OrderCreated.newBuilder()
-                        .setOrderId(orderV2.getOrderId())
-                        .setCustomerName(orderV2.getCustomerName())
-                        .setProduct(orderV2.getProduct())
-                        .setQuantity(orderV2.getQuantity())
-                        .setPrice(orderV2.getPrice())
-                        .setCreatedAt(Instant.now().toString())
-                        .build();
+    	        OrderCreated.newBuilder()
+    	                .setOrderId(orderV2.getOrderId())
+    	                .setCustomerName(orderV2.getCustomerName())
+    	                .setPriority(orderV2.getPriority())
+    	                .setProduct(orderV2.getProduct())
+    	                .setQuantity(orderV2.getQuantity())
+    	                .setPrice(orderV2.getPrice())
+    	                .setCreatedAt(Instant.now().toString())
+    	                .build();
 
 	
         String key = String.valueOf(order.getOrderId());
