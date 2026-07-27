@@ -47,7 +47,7 @@ public class OrderConsumer {
     		topics = "orders", 
     		groupId = "order-processing",
             containerFactory = "kafkaListenerContainerFactory"
-            )
+    )
     public void consume(
     		OrderCreated order,
     		@Header("eventType") String eventType,

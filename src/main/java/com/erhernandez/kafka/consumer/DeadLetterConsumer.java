@@ -25,7 +25,9 @@ public class DeadLetterConsumer {
 
 	@KafkaListener(
 	        topics = "orders-dlt",
-	        groupId = "dlt-group")
+	        groupId = "dlt-group",
+	        containerFactory = "deadLetterKafkaListenerFactory"
+	)
 	public void consume(
 			String payload,
 	        @Header("eventVersion") String version
@@ -70,7 +72,9 @@ public class DeadLetterConsumer {
 	
 	@KafkaListener(
 	        topics = "notifications-dlt",
-	        groupId = "dlt-group")
+	        groupId = "dlt-group",
+	        containerFactory = "deadLetterKafkaListenerFactory"
+	)
 	public void consume(Notification notification){
 
 	    log.info("==============================");

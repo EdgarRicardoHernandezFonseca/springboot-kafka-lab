@@ -48,7 +48,6 @@ private final KafkaTemplate<String, OrderCreated> kafkaTemplate;
     	                .build();
 
 	
-        String key = String.valueOf(order.getOrderId());
         String correlationId = UUID.randomUUID().toString();
         
         
@@ -59,6 +58,14 @@ private final KafkaTemplate<String, OrderCreated> kafkaTemplate;
                         String.valueOf(order.getOrderId()),
                         order
                 );
+        
+        record.headers().add(
+                new RecordHeader(
+                        "eventType",
+                        eventType.name().getBytes(StandardCharsets.UTF_8)
+                )
+        );
+        
         
         record.headers().add(
         	    new RecordHeader(
@@ -78,12 +85,6 @@ private final KafkaTemplate<String, OrderCreated> kafkaTemplate;
                 "correlationId",
                 correlationId.getBytes(StandardCharsets.UTF_8));
         
-        record.headers().add(
-                new RecordHeader(
-                        "eventType",
-                        eventType.name().getBytes(StandardCharsets.UTF_8)
-                )
-        );
         
         log.info(LogConstants.LINE);
         log.info("ORDER EVENT PUBLISHING STARTED");

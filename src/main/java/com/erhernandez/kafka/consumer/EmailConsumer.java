@@ -19,8 +19,8 @@ public class EmailConsumer {
     @KafkaListener(
             topics = "notifications",
             groupId = "email-service",
-	        containerFactory = "kafkaListenerContainerFactory"
-            )
+            containerFactory = "notificationKafkaListenerFactory"
+    )
     public void consume(
     		Notification notification,
     		@Header("eventType") String eventType,
@@ -52,7 +52,7 @@ public class EmailConsumer {
     	if (customer == null || customer.isBlank()) {
 
 		    throw new IllegalArgumentException(
-		            "Customer name is mandatory"
+		            "Notification message is mandatory"
 		    );
 
 		}

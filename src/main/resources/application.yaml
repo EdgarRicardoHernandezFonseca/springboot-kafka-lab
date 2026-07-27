@@ -27,8 +27,8 @@ spring:
         schema.registry.url: http://localhost:8085
 
         specific.avro.reader: true
-
-
+        
+        
 
 logging:
 

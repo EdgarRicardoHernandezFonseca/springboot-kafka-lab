@@ -19,7 +19,7 @@ public class AuditConsumer {
 	@KafkaListener(
 	        topics = "orders",
 	        groupId = "audit-service",
-	        containerFactory = "kafkaListenerContainerFactory"
+	        containerFactory = "orderKafkaListenerFactory"
 	)
 	public void consume(
 			OrderCreated order,

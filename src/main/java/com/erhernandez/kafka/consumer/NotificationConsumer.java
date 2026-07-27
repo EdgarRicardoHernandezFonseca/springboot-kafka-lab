@@ -27,7 +27,7 @@ public class NotificationConsumer {
 	@KafkaListener(
 	        topics = "orders",
 	        groupId = "notification-service",
-	        containerFactory = "kafkaListenerContainerFactory"
+	        containerFactory = "orderKafkaListenerFactory"
 	)
     public void consume(
     		OrderCreated order,
