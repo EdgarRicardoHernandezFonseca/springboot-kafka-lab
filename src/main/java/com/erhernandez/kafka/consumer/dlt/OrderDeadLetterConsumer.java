@@ -12,7 +12,7 @@ public class OrderDeadLetterConsumer {
 
     private static final Logger log =
             LoggerFactory.getLogger(OrderDeadLetterConsumer.class);
-
+    
     @KafkaListener(
             topics = "orders-dlt",
             groupId = "order-dlt-group",
@@ -36,5 +36,4 @@ public class OrderDeadLetterConsumer {
         log.info("====================================");
 
     }
-
 }

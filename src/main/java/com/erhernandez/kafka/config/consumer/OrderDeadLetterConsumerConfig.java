@@ -30,8 +30,6 @@ public class OrderDeadLetterConsumerConfig {
         factory.getContainerProperties()
                 .setAckMode(ContainerProperties.AckMode.MANUAL);
 
-        factory.setCommonErrorHandler(errorHandler);
-
         return factory;
     }
 

@@ -8,12 +8,19 @@ import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.stereotype.Service;
 import com.erhernandez.kafka.avro.OrderCreated;
+import com.erhernandez.kafka.validator.OrderValidator;
 
 @Service
 public class AuditConsumer {
 	
 	private static final Logger log =
 	        LoggerFactory.getLogger(AuditConsumer.class);
+	
+	private final OrderValidator orderValidator;
+	
+	public AuditConsumer(OrderValidator orderValidator) {
+		this.orderValidator = orderValidator;
+	}
 
 	@KafkaListener(
 	        topics = "orders",
@@ -28,32 +35,10 @@ public class AuditConsumer {
             @Header("correlationId") String correlationId,
 	        Acknowledgment ack,
 	        @Header(KafkaHeaders.RECEIVED_PARTITION) int partition,
-	        @Header(KafkaHeaders.OFFSET) long offset) {
+	        @Header(KafkaHeaders.OFFSET) long offset
+	        ) {
 		
-		if(order.getOrderId() % 2 == 0){
-		    throw new RuntimeException("Retry Test");
-		}
-    	
-    	if ("ERROR".equalsIgnoreCase(order.getCustomerName().toString())) {
-
-		    throw new RuntimeException(
-		            "Temporary processing error"
-		    );
-
-		}
-    	
-    	String customer =
-    	        order.getCustomerName() == null
-    	        ? null
-    	        : order.getCustomerName().toString();
-		
-    	if (customer == null || customer.isBlank()) {
-
-		    throw new IllegalArgumentException(
-		            "Customer name is mandatory"
-		    );
-
-		}
+		orderValidator.validate(order);
 
 		log.info("--------------------------------");
 		log.info("Message Headers");
@@ -75,7 +60,7 @@ public class AuditConsumer {
 
 		log.info("Processing audit...");
 		log.info("Order ID : {}", order.getOrderId());
-
+		// Simulation of business processing
     	try {
 			Thread.sleep(3000);
 		} catch (InterruptedException e) {

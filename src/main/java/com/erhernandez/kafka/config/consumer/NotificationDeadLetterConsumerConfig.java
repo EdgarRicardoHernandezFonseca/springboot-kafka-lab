@@ -30,8 +30,6 @@ public class NotificationDeadLetterConsumerConfig {
         factory.getContainerProperties()
                 .setAckMode(ContainerProperties.AckMode.MANUAL);
 
-        factory.setCommonErrorHandler(errorHandler);
-
         return factory;
     }
 

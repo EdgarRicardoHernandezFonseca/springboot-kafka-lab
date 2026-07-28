@@ -16,6 +16,7 @@ import com.erhernandez.kafka.service.AuditService;
 import com.erhernandez.kafka.service.InventoryService;
 import com.erhernandez.kafka.service.NotificationService;
 import com.erhernandez.kafka.service.OrderService;
+import com.erhernandez.kafka.validator.OrderValidator;
 
 @Service
 public class OrderConsumer {
@@ -29,23 +30,26 @@ public class OrderConsumer {
 	private final InventoryService inventoryService;
 	private final NotificationService notificationService;
 	private final AuditService auditService;
+	private final OrderValidator orderValidator;
 
 	public OrderConsumer(
 	        OrderService orderService,
 	        InventoryService inventoryService,
 	        NotificationService notificationService,
-	        AuditService auditService) {
+	        AuditService auditService,
+	        OrderValidator orderValidator) {
 
 	    this.orderService = orderService;
 	    this.inventoryService = inventoryService;
 	    this.notificationService = notificationService;
 	    this.auditService = auditService;
+	    this.orderValidator = orderValidator;
 	}
 
     @KafkaListener(
     		topics = "orders", 
     		groupId = "order-processing",
-            containerFactory = "kafkaListenerContainerFactory"
+            containerFactory = "orderKafkaListenerFactory"
     )
     public void consume(
     		OrderCreated order,
@@ -55,7 +59,8 @@ public class OrderConsumer {
             @Header("correlationId") String correlationId,
     		Acknowledgment ack,
             @Header(KafkaHeaders.RECEIVED_PARTITION) int partition,
-            @Header(KafkaHeaders.OFFSET) long offset) {
+            @Header(KafkaHeaders.OFFSET) long offset
+            ) {
     	
     	log.info(order.getClass().getName());
     	
@@ -229,30 +234,7 @@ public class OrderConsumer {
             long offset
     		) {
     	
-    	if(order.getOrderId() % 2 == 0){
-		    throw new RuntimeException("Retry Test");
-		}
-    	
-    	if ("ERROR".equalsIgnoreCase(order.getCustomerName().toString())) {
-
-		    throw new RuntimeException(
-		            "Temporary processing error"
-		    );
-
-		}
-    	
-    	String customer =
-    	        order.getCustomerName() == null
-    	        ? null
-    	        : order.getCustomerName().toString();
-		
-    	if (customer == null || customer.isBlank()) {
-
-		    throw new IllegalArgumentException(
-		            "Customer name is mandatory"
-		    );
-
-		}
+    	orderValidator.validate(order);
     	
     	log.info(LogConstants.SECTION);
 		log.info("ORDER CONSUMER");
@@ -263,6 +245,7 @@ public class OrderConsumer {
 		log.info("Executing Business Logic...");
 		log.info("Processing order...");
 		log.info("Order ID : {}", order.getOrderId());
+		// Simulation of business processing
     	try {
 			Thread.sleep(3000);
 		} catch (InterruptedException e) {

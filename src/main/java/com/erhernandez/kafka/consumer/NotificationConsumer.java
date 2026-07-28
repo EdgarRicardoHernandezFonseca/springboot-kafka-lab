@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.erhernandez.kafka.avro.Notification;
 import com.erhernandez.kafka.avro.OrderCreated;
 import com.erhernandez.kafka.producer.NotificationProducer;
+import com.erhernandez.kafka.validator.OrderValidator;
 
 @Service
 public class NotificationConsumer {
@@ -18,9 +19,13 @@ public class NotificationConsumer {
 	        LoggerFactory.getLogger(NotificationConsumer.class);
 	
 	private final NotificationProducer notificationProducer;
+	private final OrderValidator orderValidator;
 
-	public NotificationConsumer(NotificationProducer notificationProducer) {
+	public NotificationConsumer(
+			NotificationProducer notificationProducer,
+			OrderValidator orderValidator) {
 	    this.notificationProducer = notificationProducer;
+	    this.orderValidator = orderValidator;
 	}
 
 	@KafkaListener(
@@ -36,33 +41,10 @@ public class NotificationConsumer {
             @Header("correlationId") String correlationId,
     		Acknowledgment ack,
             @Header(KafkaHeaders.RECEIVED_PARTITION) int partition,
-            @Header(KafkaHeaders.OFFSET) long offset) {
-    	
-    	
-		if(order.getOrderId() % 2 == 0){
-		    throw new RuntimeException("Retry Test");
-		}
-    	
-    	if ("ERROR".equalsIgnoreCase(order.getCustomerName().toString())) {
-
-		    throw new RuntimeException(
-		            "Temporary processing error"
-		    );
-
-		}
-    	
-    	String customer =
-    	        order.getCustomerName() == null
-    	        ? null
-    	        : order.getCustomerName().toString();
-		
-    	if (customer == null || customer.isBlank()) {
-
-		    throw new IllegalArgumentException(
-		            "Customer name is mandatory"
-		    );
-
-		}
+            @Header(KafkaHeaders.OFFSET) long offset
+    		) {
+    	    	
+		orderValidator.validate(order);
     	
 		Notification notification =
     	        new Notification(
@@ -91,7 +73,7 @@ public class NotificationConsumer {
 
 		log.info("Processing notification...");
 		log.info("Order ID : {}", order.getOrderId());
-
+		// Simulation of business processing
     	try {
 			Thread.sleep(3000);
 		} catch (InterruptedException e) {
