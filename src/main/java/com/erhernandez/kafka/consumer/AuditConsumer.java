@@ -7,7 +7,6 @@ import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.stereotype.Service;
-
 import com.erhernandez.kafka.avro.OrderCreated;
 
 @Service

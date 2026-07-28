@@ -1,5 +1,6 @@
 package com.erhernandez.kafka.config.consumer;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
@@ -12,26 +13,26 @@ import com.erhernandez.kafka.avro.OrderCreated;
 @Configuration
 public class OrderConsumerConfig {
 
-    @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, OrderCreated>
-    orderKafkaListenerFactory(
+	@Bean
+	public ConcurrentKafkaListenerContainerFactory<String, OrderCreated>
+	orderKafkaListenerFactory(
+			@Qualifier("orderConsumerFactory")
+	        ConsumerFactory<String, OrderCreated> orderConsumerFactory,
+	        DefaultErrorHandler errorHandler) {
 
-            ConsumerFactory<String, OrderCreated> consumerFactory,
-            DefaultErrorHandler errorHandler) {
+	    ConcurrentKafkaListenerContainerFactory<String, OrderCreated> factory =
+	            new ConcurrentKafkaListenerContainerFactory<>();
 
-        ConcurrentKafkaListenerContainerFactory<String, OrderCreated> factory =
-                new ConcurrentKafkaListenerContainerFactory<>();
+	    factory.setConsumerFactory(orderConsumerFactory);
 
-        factory.setConsumerFactory(consumerFactory);
+	    factory.setConcurrency(3);
 
-        factory.setConcurrency(3);
+	    factory.getContainerProperties()
+	            .setAckMode(ContainerProperties.AckMode.MANUAL);
 
-        factory.getContainerProperties()
-                .setAckMode(ContainerProperties.AckMode.MANUAL);
+	    factory.setCommonErrorHandler(errorHandler);
 
-        factory.setCommonErrorHandler(errorHandler);
-
-        return factory;
-    }
+	    return factory;
+	}
 
 }

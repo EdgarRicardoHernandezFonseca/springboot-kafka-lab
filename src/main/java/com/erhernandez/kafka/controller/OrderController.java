@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.erhernandez.kafka.dto.Order;
 import com.erhernandez.kafka.dto.OrderV2;
 import com.erhernandez.kafka.event.EventType;

@@ -1,5 +1,6 @@
 package com.erhernandez.kafka.config.consumer;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
@@ -15,14 +16,14 @@ public class NotificationConsumerConfig {
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, Notification>
     notificationKafkaListenerFactory(
-
-            ConsumerFactory<String, Notification> consumerFactory,
+    		@Qualifier("notificationConsumerFactory")
+    		ConsumerFactory<String, Notification> notificationConsumerFactory,
             DefaultErrorHandler errorHandler) {
 
         ConcurrentKafkaListenerContainerFactory<String, Notification> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
 
-        factory.setConsumerFactory(consumerFactory);
+        factory.setConsumerFactory(notificationConsumerFactory);
 
         factory.setConcurrency(2);
 

@@ -7,7 +7,6 @@ import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
-
 import com.erhernandez.kafka.avro.Notification;
 
 @Service

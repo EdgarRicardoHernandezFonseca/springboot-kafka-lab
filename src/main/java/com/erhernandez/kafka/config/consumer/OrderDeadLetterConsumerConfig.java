@@ -1,5 +1,6 @@
 package com.erhernandez.kafka.config.consumer;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
@@ -15,14 +16,14 @@ public class OrderDeadLetterConsumerConfig {
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, OrderCreated>
     orderDeadLetterKafkaListenerFactory(
-
-            ConsumerFactory<String, OrderCreated> consumerFactory,
+    		@Qualifier("orderDeadLetterConsumerFactory")
+    		ConsumerFactory<String, OrderCreated> orderDeadLetterConsumerFactory,
             DefaultErrorHandler errorHandler) {
 
         ConcurrentKafkaListenerContainerFactory<String, OrderCreated> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
 
-        factory.setConsumerFactory(consumerFactory);
+        factory.setConsumerFactory(orderDeadLetterConsumerFactory);
 
         factory.setConcurrency(1);
 
