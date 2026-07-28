@@ -5,17 +5,21 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.listener.ContainerProperties;
+import org.springframework.kafka.listener.DefaultErrorHandler;
+
+import com.erhernandez.kafka.avro.OrderCreated;
 
 @Configuration
-public class DeadLetterConsumerConfig {
+public class OrderDeadLetterConsumerConfig {
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, String>
-    deadLetterKafkaListenerFactory(
+    public ConcurrentKafkaListenerContainerFactory<String, OrderCreated>
+    orderDeadLetterKafkaListenerFactory(
 
-            ConsumerFactory<String, String> consumerFactory) {
+            ConsumerFactory<String, OrderCreated> consumerFactory,
+            DefaultErrorHandler errorHandler) {
 
-        ConcurrentKafkaListenerContainerFactory<String, String> factory =
+        ConcurrentKafkaListenerContainerFactory<String, OrderCreated> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
 
         factory.setConsumerFactory(consumerFactory);
@@ -25,8 +29,9 @@ public class DeadLetterConsumerConfig {
         factory.getContainerProperties()
                 .setAckMode(ContainerProperties.AckMode.MANUAL);
 
-        return factory;
+        factory.setCommonErrorHandler(errorHandler);
 
+        return factory;
     }
 
 }
