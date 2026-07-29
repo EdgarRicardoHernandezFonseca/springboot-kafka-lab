@@ -6,6 +6,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 import com.erhernandez.kafka.avro.Notification;
 
@@ -21,7 +22,7 @@ public class EmailConsumer {
             containerFactory = "notificationKafkaListenerFactory"
     )
     public void consume(
-    		Notification notification,
+    		@Payload Notification notification,
     		@Header("eventType") String eventType,
             @Header("eventVersion") String eventVersion,
             @Header("source") String source,
@@ -31,63 +32,77 @@ public class EmailConsumer {
             @Header(KafkaHeaders.OFFSET) long offset) {
     	
     	
-    	if(notification.getOrderId() % 2 == 0){
-		    throw new RuntimeException("Retry Test");
-		}
-    	
-    	if ("ERROR".equalsIgnoreCase(notification.getMessage().toString())) {
-
-		    throw new RuntimeException(
-		            "Temporary processing error"
-		    );
-
-		}
-    	
-    	String customer =
-    			notification.getMessage() == null
-    	        ? null
-    	        : notification.getMessage().toString();
-		
-    	if (customer == null || customer.isBlank()) {
-
-		    throw new IllegalArgumentException(
-		            "Notification message is mandatory"
-		    );
-
-		}
-    	
-		log.info("--------------------------------");
-		log.info("Message Headers");
-		log.info("--------------------------------");
-
-		log.info("Event Type    : {}", eventType);
-		log.info("Version       : {}", eventVersion);
-		log.info("Source        : {}", source);
-		log.info("CorrelationId : {}", correlationId);
-
-		log.info("--------------------------------");
-
-		log.info("EMAIL CONSUMER");
-		log.info("Partition : {}", partition);
-		log.info("Offset    : {}", offset);
-		log.info("Order ID  : {}", notification.getOrderId());
-
-		log.info("--------------------------------");
-
-		log.info("Processing email...");
-		log.info("Order ID : {}", notification.getOrderId());
-
     	try {
-			Thread.sleep(3000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+    		
+    		log.info("===== EMAIL CONSUMER =====");
+        	
+        	if(notification.getOrderId() % 2 == 0){
+    		    throw new RuntimeException("Retry Test");
+    		}
+        	
+        	if ("ERROR".equalsIgnoreCase(notification.getMessage().toString())) {
 
-    	log.info("Business completed.");
+    		    throw new RuntimeException(
+    		            "Temporary processing error"
+    		    );
+
+    		}
+        	
+        	String customer =
+        			notification.getMessage() == null
+        	        ? null
+        	        : notification.getMessage().toString();
+    		
+        	if (customer == null || customer.isBlank()) {
+
+    		    throw new IllegalArgumentException(
+    		            "Notification message is mandatory"
+    		    );
+
+    		}
+        	
+    		log.info("--------------------------------");
+    		log.info("Message Headers");
+    		log.info("--------------------------------");
+
+    		log.info("Event Type    : {}", eventType);
+    		log.info("Version       : {}", eventVersion);
+    		log.info("Source        : {}", source);
+    		log.info("CorrelationId : {}", correlationId);
+
+    		log.info("--------------------------------");
+
+    		log.info("EMAIL CONSUMER");
+    		log.info("Partition : {}", partition);
+    		log.info("Offset    : {}", offset);
+    		log.info("Order ID  : {}", notification.getOrderId());
+
+    		log.info("--------------------------------");
+
+    		log.info("Processing email...");
+    		log.info("Order ID : {}", notification.getOrderId());
+
+        	try {
+    			Thread.sleep(3000);
+    		} catch (InterruptedException e) {
+    			e.printStackTrace();
+    		}
+
+        	log.info("Business completed.");
+        	
+        	ack.acknowledge();
+
+            log.info("Offset committed manually.");
+
+    	    
+    	}
+    	catch (Exception ex) {
+
+    	    log.error("ERROR EN EmailConsumer", ex);
+
+    	    throw ex;
+    	}
     	
-    	ack.acknowledge();
-
-        log.info("Offset committed manually.");
-
+    	
     }
 }

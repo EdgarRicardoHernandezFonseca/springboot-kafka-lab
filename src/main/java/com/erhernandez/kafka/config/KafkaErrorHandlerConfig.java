@@ -12,6 +12,8 @@ public class KafkaErrorHandlerConfig {
 
 	@Bean
 	public DefaultErrorHandler defaultErrorHandler() {
+		
+		System.out.println("******** MI HANDLER ********");
 
 	    FixedBackOff backOff = new FixedBackOff(2000L, 3);
 

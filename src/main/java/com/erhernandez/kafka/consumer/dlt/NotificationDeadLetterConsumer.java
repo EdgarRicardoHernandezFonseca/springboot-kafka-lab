@@ -3,6 +3,7 @@ package com.erhernandez.kafka.consumer.dlt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 import com.erhernandez.kafka.avro.Notification;
 
@@ -17,7 +18,9 @@ public class NotificationDeadLetterConsumer {
             groupId = "notification-dlt-group",
             containerFactory = "notificationDeadLetterKafkaListenerFactory"
     )
-    public void consume(Notification notification) {
+    public void consume(
+    		 @Payload Notification notification
+    		 ) {
 
         log.info("====================================");
         log.info("NOTIFICATION DLT");

@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Header;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.stereotype.Service;
@@ -34,7 +35,7 @@ public class NotificationConsumer {
 	        containerFactory = "orderKafkaListenerFactory"
 	)
     public void consume(
-    		OrderCreated order,
+    		@Payload OrderCreated order,
     		@Header("eventType") String eventType,
             @Header("eventVersion") String eventVersion,
             @Header("source") String source,
@@ -43,48 +44,60 @@ public class NotificationConsumer {
             @Header(KafkaHeaders.RECEIVED_PARTITION) int partition,
             @Header(KafkaHeaders.OFFSET) long offset
     		) {
-    	    	
-		orderValidator.validate(order);
-    	
-		Notification notification =
-    	        new Notification(
-    	        		order.getOrderId(),
-    	                "Order processed successfully");
-
-    	notificationProducer.send(notification, correlationId);
 		
-		log.info("--------------------------------");
-		log.info("Message Headers");
-		log.info("--------------------------------");
+		try {
 
-		log.info("Event Type    : {}", eventType);
-		log.info("Version       : {}", eventVersion);
-		log.info("Source        : {}", source);
-		log.info("CorrelationId : {}", correlationId);
+			log.info("===== NOTIFICATION CONSUMER =====");
+	    	
+			orderValidator.validate(order);
+	    	
+			Notification notification =
+	    	        new Notification(
+	    	        		order.getOrderId(),
+	    	                "Order processed successfully");
 
-		log.info("--------------------------------");
+	    	notificationProducer.send(notification, correlationId);
+			
+			log.info("--------------------------------");
+			log.info("Message Headers");
+			log.info("--------------------------------");
 
-		log.info("NOTIFICATION CONSUMER");
-		log.info("Partition : {}", partition);
-		log.info("Offset    : {}", offset);
-		log.info("Order ID  : {}", order.getOrderId());
+			log.info("Event Type    : {}", eventType);
+			log.info("Version       : {}", eventVersion);
+			log.info("Source        : {}", source);
+			log.info("CorrelationId : {}", correlationId);
 
-		log.info("--------------------------------");
+			log.info("--------------------------------");
 
-		log.info("Processing notification...");
-		log.info("Order ID : {}", order.getOrderId());
-		// Simulation of business processing
-    	try {
-			Thread.sleep(3000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+			log.info("NOTIFICATION CONSUMER");
+			log.info("Partition : {}", partition);
+			log.info("Offset    : {}", offset);
+			log.info("Order ID  : {}", order.getOrderId());
+
+			log.info("--------------------------------");
+
+			log.info("Processing notification...");
+			log.info("Order ID : {}", order.getOrderId());
+			// Simulation of business processing
+	    	try {
+				Thread.sleep(3000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+
+	    	log.info("Business completed.");
+	    	
+	    	ack.acknowledge();
+
+	        log.info("Offset committed manually.");
+
 		}
+		catch (Exception ex) {
 
-    	log.info("Business completed.");
-    	
-    	ack.acknowledge();
+		    log.error("ERROR EN NotificationConsumer", ex);
 
-        log.info("Offset committed manually.");
-
+		    throw ex;
+		}
+		
     }
 }

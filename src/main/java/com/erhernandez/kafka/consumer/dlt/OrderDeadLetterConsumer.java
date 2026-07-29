@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Header;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 import com.erhernandez.kafka.avro.OrderCreated;
 
@@ -19,7 +20,7 @@ public class OrderDeadLetterConsumer {
             containerFactory = "orderDeadLetterKafkaListenerFactory"
     )
     public void consume(
-            OrderCreated order,
+    		@Payload OrderCreated order,
             @Header("eventVersion") String version,
             @Header("eventType") String eventType,
             @Header("correlationId") String correlationId) {

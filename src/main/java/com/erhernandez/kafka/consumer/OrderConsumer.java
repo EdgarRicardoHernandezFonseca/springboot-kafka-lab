@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Header;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.stereotype.Service;
@@ -45,14 +46,14 @@ public class OrderConsumer {
 	    this.auditService = auditService;
 	    this.orderValidator = orderValidator;
 	}
-
+			
     @KafkaListener(
     		topics = "orders", 
     		groupId = "order-processing",
             containerFactory = "orderKafkaListenerFactory"
     )
     public void consume(
-    		OrderCreated order,
+    		@Payload OrderCreated order,
     		@Header("eventType") String eventType,
             @Header("eventVersion") String eventVersion,
             @Header("source") String source,
@@ -62,50 +63,65 @@ public class OrderConsumer {
             @Header(KafkaHeaders.OFFSET) long offset
             ) {
     	
-    	log.info(order.getClass().getName());
     	
-    	logHeaders(
-                order,
-                eventType,
-                eventVersion,
-                source,
-                correlationId,
-                partition,
-                offset);
+    	try {
+    		
+    		log.info("===== ORDER CONSUMER =====");
+    		
+    		log.info(order.getClass().getName());
+        	
+        	logHeaders(
+                    order,
+                    eventType,
+                    eventVersion,
+                    source,
+                    correlationId,
+                    partition,
+                    offset);
+        	
+        	log.info("");
+            log.info("Executing Business Logic...");
+        	
+        	EventType type =
+                    EventType.valueOf(eventType);
+
+            switch (type) {
+
+                case ORDER_CREATED:
+                    processCreate(order, ack, partition, offset);
+                    break;
+
+                case ORDER_UPDATED:
+                    processUpdate(order, ack, partition, offset);
+                    break;
+
+                case ORDER_CANCELLED:
+                    processCancel(order, ack, partition, offset);
+                    break;
+
+                default:
+                    throw new IllegalArgumentException(
+                            "Unsupported event");
+            }
+            
+            log.info("");
+            log.info("Finished Successfully.");
+            log.info("");
+            log.info(LogConstants.LINE);
+            log.info("ORDER PROCESSING FINISHED");
+            log.info(LogConstants.LINE);
+
+    	}
+    	catch (Exception ex) {
+
+    	    log.error("ERROR EN OrderConsumer", ex);
+
+    	    throw ex;
+    	}
     	
-    	log.info("");
-        log.info("Executing Business Logic...");
     	
-    	EventType type =
-                EventType.valueOf(eventType);
-
-        switch (type) {
-
-            case ORDER_CREATED:
-                processCreate(order, ack, partition, offset);
-                break;
-
-            case ORDER_UPDATED:
-                processUpdate(order, ack, partition, offset);
-                break;
-
-            case ORDER_CANCELLED:
-                processCancel(order, ack, partition, offset);
-                break;
-
-            default:
-                throw new IllegalArgumentException(
-                        "Unsupported event");
-        }
-        
-        log.info("");
-        log.info("Finished Successfully.");
-        log.info("");
-        log.info(LogConstants.LINE);
-        log.info("ORDER PROCESSING FINISHED");
-        log.info(LogConstants.LINE);
     }
-   
+    
     private void processCreate(
     		OrderCreated order,
             Acknowledgment ack,

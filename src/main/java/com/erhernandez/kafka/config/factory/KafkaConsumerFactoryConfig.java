@@ -23,8 +23,18 @@ public class KafkaConsumerFactoryConfig {
     /**
      * Obtiene toda la configuración definida en application.yml.
      */
-    private Map<String, Object> consumerProperties() {
-        return kafkaProperties.buildConsumerProperties();
+//    private Map<String, Object> consumerProperties() {
+//        return kafkaProperties.buildConsumerProperties();
+//    }
+    private Map<String,Object> consumerProperties() {
+
+        Map<String,Object> props =
+                kafkaProperties.buildConsumerProperties();
+
+        props.forEach((k,v) ->
+                System.out.println(k + " = " + v));
+
+        return props;
     }
 
     /**

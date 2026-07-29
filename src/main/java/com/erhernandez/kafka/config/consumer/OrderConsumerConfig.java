@@ -19,6 +19,8 @@ public class OrderConsumerConfig {
 			@Qualifier("orderConsumerFactory")
 	        ConsumerFactory<String, OrderCreated> orderConsumerFactory,
 	        DefaultErrorHandler errorHandler) {
+		
+		System.out.println("HANDLER RECIBIDO = " + errorHandler);
 
 	    ConcurrentKafkaListenerContainerFactory<String, OrderCreated> factory =
 	            new ConcurrentKafkaListenerContainerFactory<>();
