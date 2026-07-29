@@ -1,9 +1,9 @@
 package com.erhernandez.kafka.exception;
 
-public class NonRetryableBusinessException extends RuntimeException {
+public class NonRetryableBusinessException extends BusinessException {
 
-    public NonRetryableBusinessException(String message) {
-        super(message);
-    }
+	public NonRetryableBusinessException(String message) {
+		super(message);
+	}
 
 }

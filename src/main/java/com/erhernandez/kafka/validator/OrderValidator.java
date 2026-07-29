@@ -11,22 +11,25 @@ public class OrderValidator {
 
     public void validate(OrderCreated order) {
 
-        if (order.getOrderId() % 2 == 0) {
-            throw new RetryableBusinessException(
-                    "Retry test");
-        }
+    	if(order.getOrderId() % 2 == 0){
+
+    	    throw new RetryableBusinessException(
+    	            "Inventory service unavailable");
+    	}
 
         String customer =
                 order.getCustomerName() == null
                         ? null
                         : order.getCustomerName().toString();
 
-        if ("ERROR".equalsIgnoreCase(customer)) {
+        if("ERROR".equalsIgnoreCase(customer)){
+
             throw new RetryableBusinessException(
                     "Temporary processing error");
         }
 
-        if (customer == null || customer.isBlank()) {
+        if(customer == null || customer.isBlank()){
+
             throw new InvalidCustomerException(
                     "Customer name is mandatory");
         }
