@@ -1,18 +1,23 @@
 package com.erhernandez.kafka.entity;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.time.Instant;
 
 @Entity
 @Table(name = "orders")
+@Getter
+@Setter
+@NoArgsConstructor
 public class OrderEntity {
 
     @Id
-    private Long id;
+    private Long orderId;
 
     private String customerName;
 
@@ -22,7 +27,7 @@ public class OrderEntity {
 
     private Integer quantity;
 
-    private BigDecimal price;
+    private Double price;
 
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 }

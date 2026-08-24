@@ -84,3 +84,29 @@ services:
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9093
 
       KAFKA_CLUSTERS_0_SCHEMAREGISTRY: http://schema-registry:8082
+
+
+
+  postgres:
+
+    image: postgres:16
+
+    container_name: kafka-lab-postgres
+
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: kafka_lab
+      POSTGRES_USER: kafka_user
+      POSTGRES_PASSWORD: kafka_password
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+
+
+volumes:
+  postgres_data:
