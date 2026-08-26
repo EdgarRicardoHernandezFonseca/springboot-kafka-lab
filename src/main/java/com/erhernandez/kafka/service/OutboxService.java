@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -30,5 +31,14 @@ public class OutboxService {
         event.setCreatedAt(Instant.now());
 
         return outboxEventRepository.save(event);
+    }
+
+    public List<OutboxEventEntity> findPendingEvents() {
+        return outboxEventRepository.findByProcessedAtIsNullOrderByCreatedAtAsc();
+    }
+
+    public void markAsProcessed(OutboxEventEntity event) {
+        event.setProcessedAt(Instant.now());
+        outboxEventRepository.save(event);
     }
 }
