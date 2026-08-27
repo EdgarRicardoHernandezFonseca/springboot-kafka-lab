@@ -26,7 +26,8 @@ public class OrderPersistenceService {
                   "priority": "%s",
                   "product": "%s",
                   "quantity": %d,
-                  "price": %.2f
+                  "price": %.2f,
+                  "createdAt": "%s"
                 }
                 """.formatted(
                 savedOrder.getOrderId(),
@@ -34,9 +35,9 @@ public class OrderPersistenceService {
                 savedOrder.getPriority(),
                 savedOrder.getProduct(),
                 savedOrder.getQuantity(),
-                savedOrder.getPrice()
+                savedOrder.getPrice(),
+                savedOrder.getCreatedAt()
         );
-
         outboxService.save(
                 savedOrder.getOrderId(),
                 "Order",
