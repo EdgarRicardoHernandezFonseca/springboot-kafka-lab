@@ -3,6 +3,7 @@ package com.erhernandez.kafka.service;
 import com.erhernandez.kafka.entity.OutboxEventEntity;
 import com.erhernandez.kafka.repository.OutboxEventRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -14,6 +15,9 @@ import java.util.UUID;
 public class OutboxService {
 
     private final OutboxEventRepository outboxEventRepository;
+
+    @Value("${kafka.lab.outbox.fail:false}")
+    private boolean failAfterSave;
 
     public OutboxEventEntity save(
             Long aggregateId,
@@ -30,11 +34,19 @@ public class OutboxService {
         event.setPayload(payload);
         event.setCreatedAt(Instant.now());
 
-        return outboxEventRepository.save(event);
+        OutboxEventEntity savedEvent =
+                outboxEventRepository.save(event);
+
+        if (failAfterSave) {
+            throw new RuntimeException("Outbox persistence failed");
+        }
+
+        return savedEvent;
     }
 
     public List<OutboxEventEntity> findPendingEvents() {
-        return outboxEventRepository.findByProcessedAtIsNullOrderByCreatedAtAsc();
+        return outboxEventRepository
+                .findByProcessedAtIsNullOrderByCreatedAtAsc();
     }
 
     public void markAsProcessed(OutboxEventEntity event) {
