@@ -10,6 +10,10 @@ import com.erhernandez.kafka.dto.OrderV2;
 import com.erhernandez.kafka.event.EventType;
 import com.erhernandez.kafka.producer.OrderProducer;
 import com.erhernandez.kafka.producer.OrderProducerV2;
+import com.erhernandez.kafka.service.OrderPersistenceService;
+import com.erhernandez.kafka.entity.OrderEntity;
+
+import java.time.Instant;
 
 @RestController
 @RequestMapping("/orders")
@@ -17,13 +21,16 @@ public class OrderController {
 
     private final OrderProducer producer;
     private final OrderProducerV2 producerV2;
+    private final OrderPersistenceService orderPersistenceService;
 
     public OrderController(
             OrderProducer producer,
-            OrderProducerV2 producerV2) {
+            OrderProducerV2 producerV2,
+            OrderPersistenceService orderPersistenceService) {
 
         this.producer = producer;
         this.producerV2 = producerV2;
+        this.orderPersistenceService = orderPersistenceService;
     }
 
     @PostMapping
@@ -48,10 +55,20 @@ public class OrderController {
     public ResponseEntity<String> createOrder(
             @RequestBody OrderV2 order){
 
-        producerV2.send(order, EventType.ORDER_CREATED);
-
-        return ResponseEntity.ok(
-                "ORDER_CREATED sent successfully."
+    	OrderEntity orderEntity = new OrderEntity(); 
+    	
+    	orderEntity.setOrderId(order.getOrderId()); 
+    	orderEntity.setCustomerName(order.getCustomerName()); 
+    	orderEntity.setPriority(order.getPriority()); 
+    	orderEntity.setProduct(order.getProduct()); 
+    	orderEntity.setQuantity(order.getQuantity()); 
+    	orderEntity.setPrice(order.getPrice()); 
+    	orderEntity.setCreatedAt(Instant.now());
+    	
+    	orderPersistenceService.save(orderEntity);
+    	
+        return ResponseEntity.ok( 
+        		"ORDER_CREATED stored in Transactional Outbox successfully." 
         );
     }
     

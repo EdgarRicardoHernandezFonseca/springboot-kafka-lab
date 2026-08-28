@@ -16,7 +16,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 
-@SpringBootTest
+@SpringBootTest(properties = {
+        "kafka.lab.outbox.publisher.enabled=false"
+})
 class TransactionalOutboxRollbackTest {
 
     @Autowired
@@ -31,11 +33,9 @@ class TransactionalOutboxRollbackTest {
     @Test
     void shouldRollbackOrderWhenOutboxFails() {
 
-        Long orderId = System.currentTimeMillis();
-
         OrderEntity order = new OrderEntity();
 
-        order.setOrderId(orderId);
+        order.setOrderId(3001L);
         order.setCustomerName("Edgar");
         order.setPriority("HIGH");
         order.setProduct("Laptop");
@@ -58,7 +58,7 @@ class TransactionalOutboxRollbackTest {
                 .isInstanceOf(RuntimeException.class)
                 .hasMessage("Outbox persistence failed");
 
-        assertThat(orderRepository.findById(orderId))
+        assertThat(orderRepository.findById(3001L))
                 .isEmpty();
     }
 }
