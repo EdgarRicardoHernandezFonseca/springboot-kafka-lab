@@ -77,7 +77,7 @@ src
 | v1.8.1 | Multiple Consumers Implementation & Load Distribution | ✅ |
 | v1.9.0 | Avro and Schema Registry | ✅ |
 | v1.9.1 | Complete Avro + Schema Registry Integration | ✅ |
-| v2.0.0 | Database integration using the Outbox pattern to ensure | ⏳ |
+| v2.0.0 | Database integration using the Outbox pattern to ensure | ✅ |
 | v0.0.0 | 🚧 | ⏳ |
 
 ---
@@ -241,6 +241,7 @@ docs/
     README-v1.8.1.md
     README-v1.9.0.md
     README-v1.9.1.md
+    README-v2.0.0.md
 ```
 
 Each document explains:
@@ -304,27 +305,5 @@ GitHub: *https://github.com/EdgarRicardoHernandezFonseca*
 # License
 
 This project is available for educational and demonstration purposes.
-
----
-
-# Progress
-
-| Progress                 | Status   |
-| ------------------------ | -------- |
-| Producer                 | ✅       |
-| Consumer                 | ✅       |
-| Consumer Groups          | ✅       |
-| Manual Ack               | ✅       |
-| Retry                    | ✅       |
-| Dead Letter Topic        | ✅       |
-| Non-Retryable Exceptions | ✅       |
-| Custom Headers           | ✅       |
-| Reading Headers          | ✅       |
-| Filtering                | ✅       |
-| Avro                     | ✅       |
-| Kafka Streams            | ⏳       |
-| Transactions             | ⏳       |
-| Exactly Once             | ⏳       |
-| 🚧                       | ⏳       |
 
 ---
